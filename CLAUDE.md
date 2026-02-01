@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Instructions
+
+**Always fetch the latest documentation** before making changes. Neovim and plugin APIs evolve frequently. Use context7 or web search to retrieve up-to-date docs for:
+- Neovim APIs (vim.lsp, vim.api, etc.)
+- Plugin configuration (lazy.nvim, nvim-cmp, treesitter, etc.)
+- LSP server settings (rust-analyzer, lua_ls, etc.)
+
 ## Overview
 
 This is a Neovim configuration using **lazy.nvim** as the plugin manager. The configuration is minimal and modular.
@@ -14,6 +21,7 @@ lua/lazy_init.lua     → Bootstraps lazy.nvim, imports plugins from lua/plugins
 lua/lsp_setup.lua     → Native LSP configuration (enables servers, keymaps)
 lua/plugins/*.lua     → Plugin specifications (one file per plugin or category)
 lsp/*.lua             → LSP server configs (Neovim 0.11 native format)
+colors/*.lua          → Colorscheme definitions
 lazy-lock.json        → Locked plugin versions for reproducibility
 ```
 
@@ -42,6 +50,10 @@ Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
 ## LSP Configuration
 
 Uses Neovim 0.11+ native LSP (no nvim-lspconfig plugin required).
+
+Features enabled:
+- **Inlay hints** — Type annotations shown inline (auto-enabled on attach)
+- **Clippy** — rust-analyzer uses clippy instead of cargo check for diagnostics
 
 ### Adding an LSP Server
 
@@ -73,3 +85,18 @@ vim.lsp.enable('rust_analyzer')
 | `<leader>rn` | Rename symbol |
 | `<leader>f` | Format buffer |
 | `[d` / `]d` | Previous/next diagnostic |
+
+## Completion
+
+Uses nvim-cmp with LSP, buffer, and path sources.
+
+### Completion Keymaps
+
+| Key | Action |
+|-----|--------|
+| `<Tab>` | Next item |
+| `<S-Tab>` | Previous item |
+| `<CR>` | Confirm selection |
+| `<C-Space>` | Trigger completion |
+| `<C-e>` | Abort |
+| `<C-b>` / `<C-f>` | Scroll docs |
