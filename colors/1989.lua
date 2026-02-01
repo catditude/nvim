@@ -173,3 +173,6 @@ hi("DiagnosticError", { fg = colors.dark_pink })
 hi("DiagnosticWarn", { fg = colors.light_yellow })
 hi("DiagnosticInfo", { fg = colors.light_blue })
 hi("DiagnosticHint", { fg = colors.mint })
+
+-- LSP
+hi("LspInlayHint", { fg = colors.mid_gray, italic = true })
