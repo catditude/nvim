@@ -15,12 +15,14 @@ This is a Neovim configuration using **lazy.nvim** as the plugin manager. The co
 
 ## Architecture
 
+**File organization:** All custom Lua modules go in `lua/`. Only Neovim-required paths (`init.lua`, `colors/`) stay at root.
+
 ```
 init.lua              → Entry point, loads lazy_init and lsp_setup
 lua/lazy_init.lua     → Bootstraps lazy.nvim, imports plugins from lua/plugins/
 lua/lsp_setup.lua     → Native LSP configuration (enables servers, keymaps)
 lua/plugins/*.lua     → Plugin specifications (one file per plugin or category)
-lsp/*.lua             → LSP server configs (Neovim 0.11 native format)
+lua/lsp/*.lua         → LSP server configs (Neovim 0.11 native format)
 colors/*.lua          → Colorscheme definitions
 lazy-lock.json        → Locked plugin versions for reproducibility
 ```
@@ -57,10 +59,10 @@ Features enabled:
 
 ### Adding an LSP Server
 
-1. Create a config file in `lsp/<server_name>.lua`:
+1. Create a config file in `lua/lsp/<server_name>.lua`:
 
 ```lua
--- lsp/rust_analyzer.lua
+-- lua/lsp/rust_analyzer.lua
 return {
   cmd = { 'rust-analyzer' },
   filetypes = { 'rust' },
