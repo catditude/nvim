@@ -29,7 +29,7 @@ end
 -- UI elements
 hi("Normal", { fg = colors.white, bg = colors.dark_gray })
 hi("Cursor", { fg = colors.dark_gray, bg = colors.white })
-hi("Visual", { bg = colors.mid_gray })
+hi("Visual", { bg = colors.light_gray, blend = 50 })
 hi("CursorLine", { bg = colors.light_gray })
 hi("CursorColumn", { bg = colors.light_gray })
 hi("ColorColumn", { bg = colors.light_gray })
