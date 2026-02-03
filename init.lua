@@ -1,3 +1,5 @@
+vim.g.mapleader = " "
+
 vim.opt.relativenumber = true
 vim.cmd.colorscheme("1989")
 

@@ -13,6 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Neovim configuration using **lazy.nvim** as the plugin manager. The configuration is minimal and modular.
 
+**Leader key:** Space (`vim.g.mapleader = " "`) — set in `init.lua` before plugins load
+
 ## Architecture
 
 **File organization:** All custom Lua modules go in `lua/`. Only Neovim-required paths (`init.lua`, `colors/`) stay at root.
@@ -48,6 +50,14 @@ return {
 ### Syncing Plugins
 
 Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
+
+### Installed Plugins
+
+- **oil.nvim** — File explorer (edit filesystem like a buffer), `-` to open
+- **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers
+- **flash.nvim** — Quick navigation/motions
+- **mason.nvim** — LSP/tool installer
+- **treesitter** — Syntax highlighting and parsing
 
 ## LSP Configuration
 
