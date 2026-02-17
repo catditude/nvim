@@ -9,6 +9,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Plugin configuration (lazy.nvim, nvim-cmp, treesitter, etc.)
 - LSP server settings (rust-analyzer, lua_ls, etc.)
 
+**After every change, check if CLAUDE.md needs updating.** If you add a plugin, change keymaps, modify the architecture, or alter LSP config, update the relevant sections of this file to keep it accurate.
+
 ## Overview
 
 This is a Neovim configuration using **lazy.nvim** as the plugin manager. The configuration is minimal and modular.
@@ -54,7 +56,7 @@ Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
 ### Installed Plugins
 
 - **oil.nvim** — File explorer (edit filesystem like a buffer), `-` to open
-- **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers, `<leader>fh` help tags
+- **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers, `<leader>fh` help tags, `<leader>fk` keymaps
 - **flash.nvim** — Quick navigation/motions, `s` to jump
 - **gitsigns.nvim** — Git signs in the gutter (added/changed/deleted lines)
 - **which-key.nvim** — Keybinding popup hints, `<leader>?` for buffer-local keymaps
