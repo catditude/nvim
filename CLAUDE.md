@@ -58,6 +58,7 @@ Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
 - **flash.nvim** — Quick navigation/motions, `s` to jump
 - **gitsigns.nvim** — Git signs in the gutter (added/changed/deleted lines)
 - **which-key.nvim** — Keybinding popup hints, `<leader>?` for buffer-local keymaps
+- **lualine.nvim** — Statusline (mode, branch, diff, diagnostics, filename, filetype, cursor position)
 - **mason.nvim** — LSP/tool installer
 - **treesitter** — Syntax highlighting and parsing
 
