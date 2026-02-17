@@ -5,6 +5,12 @@ end
 vim.g.colors_name = "1989"
 vim.o.background = "dark"
 
+-- Color palette
+-- Grays:   dark_gray < light_gray < mid_gray < white
+-- Purples: gray_purple (muted) < lavender (cool) < light_purple (warm blush)
+-- Pinks:   pink (medium) < light_purple (light rose) | dark_pink (vivid)
+-- Blues:   dark_blue < light_blue
+-- Others:  mint (green), light_yellow (cream), dark_green
 local colors = {
   dark_gray = "#1c1c1c",
   mid_gray = "#878787",
