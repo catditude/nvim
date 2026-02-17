@@ -54,8 +54,10 @@ Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
 ### Installed Plugins
 
 - **oil.nvim** — File explorer (edit filesystem like a buffer), `-` to open
-- **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers
-- **flash.nvim** — Quick navigation/motions
+- **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers, `<leader>fh` help tags
+- **flash.nvim** — Quick navigation/motions, `s` to jump
+- **gitsigns.nvim** — Git signs in the gutter (added/changed/deleted lines)
+- **which-key.nvim** — Keybinding popup hints, `<leader>?` for buffer-local keymaps
 - **mason.nvim** — LSP/tool installer
 - **treesitter** — Syntax highlighting and parsing
 
@@ -92,23 +94,3 @@ vim.lsp.enable('rust_analyzer')
 |-----|--------|
 | `gd` | Go to definition |
 | `gr` | Find references |
-| `K` | Hover documentation |
-| `<leader>ca` | Code actions |
-| `<leader>rn` | Rename symbol |
-| `<leader>f` | Format buffer |
-| `[d` / `]d` | Previous/next diagnostic |
-
-## Completion
-
-Uses nvim-cmp with LSP, buffer, and path sources.
-
-### Completion Keymaps
-
-| Key | Action |
-|-----|--------|
-| `<Tab>` | Next item |
-| `<S-Tab>` | Previous item |
-| `<CR>` | Confirm selection |
-| `<C-Space>` | Trigger completion |
-| `<C-e>` | Abort |
-| `<C-b>` / `<C-f>` | Scroll docs |
