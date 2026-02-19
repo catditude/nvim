@@ -64,6 +64,7 @@ Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
 - **lualine.nvim** — Statusline (mode, branch, diff, diagnostics, filename, filetype, cursor position)
 - **mason.nvim** — LSP/tool installer
 - **treesitter** — Syntax highlighting and parsing
+- **nvim-cmp** — Autocompletion (LSP, buffer, path sources), `<Tab>` to confirm, ghost text preview
 - **lazygit.nvim** — Full lazygit TUI inside Neovim, `<leader>lg` to open
 - **auto-session** — Automatic session save/restore per directory
 
