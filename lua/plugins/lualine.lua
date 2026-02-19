@@ -11,18 +11,44 @@ return {
     },
     sections = {
       lualine_a = { "mode" },
-      lualine_b = { "branch", "diff", "diagnostics" },
+      lualine_b = {
+        "branch",
+        {
+          function()
+            local signs = vim.b.gitsigns_status_dict
+            if not signs then return "" end
+            local dirty = (signs.changed or 0) + (signs.added or 0) + (signs.removed or 0) > 0
+            return dirty and "*" or ""
+          end,
+          color = { fg = "#e8b75f" },
+          padding = { left = 0, right = 1 },
+        },
+        {
+          function()
+            local signs = vim.b.gitsigns_head and vim.b.gitsigns_status_dict
+            if not signs then return "" end
+            local parts = {}
+            if (signs.ahead or 0) > 0 then table.insert(parts, "↑" .. signs.ahead) end
+            if (signs.behind or 0) > 0 then table.insert(parts, "↓" .. signs.behind) end
+            return table.concat(parts, " ")
+          end,
+          color = { fg = "#00bcd4" },
+          padding = { left = 0, right = 1 },
+        },
+        "diff",
+        "diagnostics",
+      },
       lualine_c = {
         {
           function()
             return vim.fn.expand("%:.:h")
           end,
-          icon = " ",
+          icon = "",
           color = { fg = "#afafd7" },
         },
-        { "filename", color = { fg = "#F0C4C8" } },
+        { "filename", icon = "󰄛", color = { fg = "#F0C4C8" } },
       },
-      lualine_x = { "encoding", "fileformat", "filetype" },
+      lualine_x = { "filetype" },
       lualine_y = { "progress" },
       lualine_z = { "location" },
     },
