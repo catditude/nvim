@@ -67,6 +67,7 @@ Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
 - **nvim-cmp** — Autocompletion (LSP, buffer, path sources), `<Tab>` to confirm, ghost text preview
 - **lazygit.nvim** — Full lazygit TUI inside Neovim, `<leader>lg` to open
 - **auto-session** — Automatic session save/restore per directory
+- **vim-tmux-navigator** — Seamless `<C-h/j/k/l>` navigation between Neovim splits and tmux panes, `<C-\>` for previous
 
 ## LSP Configuration
 
