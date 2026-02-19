@@ -22,9 +22,10 @@ This is a Neovim configuration using **lazy.nvim** as the plugin manager. The co
 **File organization:** All custom Lua modules go in `lua/`. Only Neovim-required paths (`init.lua`, `colors/`) stay at root.
 
 ```
-init.lua              → Entry point, loads lazy_init and lsp_setup
+init.lua              → Entry point, loads lazy_init, lsp_setup, and file_watcher
 lua/lazy_init.lua     → Bootstraps lazy.nvim, imports plugins from lua/plugins/
 lua/lsp_setup.lua     → Native LSP configuration (enables servers, keymaps)
+lua/file_watcher.lua  → Auto-reloads buffers when files change externally (libuv polling)
 lua/plugins/*.lua     → Plugin specifications (one file per plugin or category)
 lua/lsp/*.lua         → LSP server configs (Neovim 0.11 native format)
 colors/*.lua          → Colorscheme definitions
@@ -63,6 +64,8 @@ Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
 - **lualine.nvim** — Statusline (mode, branch, diff, diagnostics, filename, filetype, cursor position)
 - **mason.nvim** — LSP/tool installer
 - **treesitter** — Syntax highlighting and parsing
+- **lazygit.nvim** — Full lazygit TUI inside Neovim, `<leader>lg` to open
+- **auto-session** — Automatic session save/restore per directory
 
 ## LSP Configuration
 
