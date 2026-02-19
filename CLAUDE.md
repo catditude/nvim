@@ -40,6 +40,8 @@ lazy-lock.json        → Locked plugin versions for reproducibility
 
 ### Adding a Plugin
 
+**Always check the plugin's GitHub README** for the recommended lazy.nvim installation spec before writing config.
+
 Create a file in `lua/plugins/` returning the plugin spec:
 
 ```lua
@@ -50,9 +52,15 @@ return {
 }
 ```
 
+**Keep specs minimal.** Don't add `lazy = true` or `cmd` when `keys` already handles lazy-loading.
+
 ### Syncing Plugins
 
 Open Neovim and run `:Lazy sync` to install/update plugins according to specs.
+
+### Adding a Custom Feature (non-plugin)
+
+Create a Lua module in `lua/` and load it via `require()` in `init.lua`. See `lua/file_watcher.lua` as an example.
 
 ### Installed Plugins
 
@@ -76,6 +84,7 @@ Uses Neovim 0.11+ native LSP (no nvim-lspconfig plugin required).
 Features enabled:
 - **Inlay hints** — Type annotations shown inline (auto-enabled on attach)
 - **Clippy** — rust-analyzer uses clippy instead of cargo check for diagnostics
+- **cmp capabilities** — `vim.lsp.config('*')` injects nvim-cmp capabilities into all servers
 
 ### Adding an LSP Server
 
