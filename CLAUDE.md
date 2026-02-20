@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Always fetch the latest documentation** before making changes. Neovim and plugin APIs evolve frequently. Use context7 or web search to retrieve up-to-date docs for:
 - Neovim APIs (vim.lsp, vim.api, etc.)
 - Plugin configuration (lazy.nvim, nvim-cmp, treesitter, etc.)
-- LSP server settings (rust-analyzer, lua_ls, etc.)
+- LSP server settings (rust-analyzer, pyright, lua_ls, etc.)
 
 **After every change, check if CLAUDE.md needs updating.** If you add a plugin, change keymaps, modify the architecture, or alter LSP config, update the relevant sections of this file to keep it accurate.
 
@@ -81,14 +81,19 @@ Create a Lua module in `lua/` and load it via `require()` in `init.lua`. See `lu
 
 Uses Neovim 0.11+ native LSP (no nvim-lspconfig plugin required).
 
+**Important: Two-step registration.** Configs live in `lua/lsp/` (Lua require path), but `vim.lsp.enable()` only searches `lsp/` on the runtimepath (e.g. `~/.config/nvim/lsp/`). Since our configs are in `lua/lsp/`, you must explicitly register them with `vim.lsp.config()` using `require()` before calling `vim.lsp.enable()`. Omitting the `vim.lsp.config()` call means your config file is silently ignored — the server may still start using Neovim's built-in defaults (if one exists), but without your custom settings.
+
 Features enabled:
 - **Inlay hints** — Type annotations shown inline (auto-enabled on attach)
+- **Pyright** — Python type checking, completions, and diagnostics
 - **Clippy** — rust-analyzer uses clippy instead of cargo check for diagnostics
 - **cmp capabilities** — `vim.lsp.config('*')` injects nvim-cmp capabilities into all servers
 
 ### Adding an LSP Server
 
-1. Create a config file in `lua/lsp/<server_name>.lua`:
+1. Install the server binary via Mason (`:MasonInstall <server_name>`)
+
+2. Create a config file in `lua/lsp/<server_name>.lua`:
 
 ```lua
 -- lua/lsp/rust_analyzer.lua
@@ -99,9 +104,10 @@ return {
 }
 ```
 
-2. Enable it in `lua/lsp_setup.lua`:
+3. Register and enable it in `lua/lsp_setup.lua` (both lines required):
 
 ```lua
+vim.lsp.config('rust_analyzer', require('lsp.rust_analyzer'))
 vim.lsp.enable('rust_analyzer')
 ```
 
