@@ -12,6 +12,14 @@ return {
     '.git',
   },
   settings = {
+    pyright = {
+      inlayHints = {
+        variableTypes = true,
+        functionReturnTypes = true,
+        callArgumentNames = true,
+        pytestParameters = true,
+      },
+    },
     python = {
       analysis = {
         autoSearchPaths = true,
