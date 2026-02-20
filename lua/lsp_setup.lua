@@ -4,8 +4,8 @@ vim.lsp.config('*', {
 
 vim.lsp.config('rust_analyzer', require('lsp.rust_analyzer'))
 vim.lsp.enable('rust_analyzer')
-vim.lsp.config('pyright', require('lsp.pyright'))
-vim.lsp.enable('pyright')
+vim.lsp.config('basedpyright', require('lsp.basedpyright'))
+vim.lsp.enable('basedpyright')
 vim.lsp.inlay_hint.enable(true)
 
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)

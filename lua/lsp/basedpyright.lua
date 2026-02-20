@@ -1,6 +1,6 @@
 ---@type vim.lsp.Config
 return {
-  cmd = { 'pyright-langserver', '--stdio' },
+  cmd = { 'basedpyright-langserver', '--stdio' },
   filetypes = { 'python' },
   root_markers = {
     'pyrightconfig.json',
@@ -12,19 +12,17 @@ return {
     '.git',
   },
   settings = {
-    pyright = {
-      inlayHints = {
-        variableTypes = true,
-        functionReturnTypes = true,
-        callArgumentNames = true,
-        pytestParameters = true,
-      },
-    },
-    python = {
+    basedpyright = {
       analysis = {
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
         diagnosticMode = 'openFilesOnly',
+        inlayHints = {
+          variableTypes = true,
+          functionReturnTypes = true,
+          callArgumentNames = true,
+          genericTypes = true,
+        },
       },
     },
   },

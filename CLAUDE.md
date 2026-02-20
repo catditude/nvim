@@ -85,7 +85,7 @@ Uses Neovim 0.11+ native LSP (no nvim-lspconfig plugin required).
 
 Features enabled:
 - **Inlay hints** — Type annotations shown inline (auto-enabled on attach)
-- **Pyright** — Python type checking, completions, and diagnostics
+- **basedpyright** — Python type checking, completions, diagnostics, and inlay hints (pyright fork with extra features)
 - **Clippy** — rust-analyzer uses clippy instead of cargo check for diagnostics
 - **cmp capabilities** — `vim.lsp.config('*')` injects nvim-cmp capabilities into all servers
 

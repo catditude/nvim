@@ -185,4 +185,4 @@ hi("DiagnosticUnderlineInfo", { undercurl = true, sp = colors.light_blue })
 hi("DiagnosticUnderlineHint", { undercurl = true, sp = colors.mint })
 
 -- LSP
-hi("LspInlayHint", { fg = colors.mid_gray, italic = true })
+hi("LspInlayHint", { fg = "#505058", italic = true })
