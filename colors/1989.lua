@@ -50,6 +50,7 @@ hi("IncSearch", { fg = colors.dark_gray, bg = colors.light_yellow })
 hi("Search", { underline = true })
 hi("Directory", { fg = colors.lavender })
 hi("Folded", { fg = colors.light_yellow, bg = colors.dark_gray })
+hi("FloatBorder", { fg = colors.gray_purple, bg = colors.dark_gray })
 hi("TabLine", { fg = colors.white, bg = colors.dark_gray })
 hi("TabLineSel", { fg = colors.light_purple, bg = colors.dark_gray })
 hi("TabLineFill", { fg = colors.white, bg = colors.dark_gray })
@@ -183,6 +184,27 @@ hi("DiagnosticUnderlineError", { undercurl = true, sp = "#e06070" })
 hi("DiagnosticUnderlineWarn", { undercurl = true, sp = colors.light_yellow })
 hi("DiagnosticUnderlineInfo", { undercurl = true, sp = colors.light_blue })
 hi("DiagnosticUnderlineHint", { undercurl = true, sp = colors.mint })
+
+-- Gitsigns gutter signs
+hi("GitSignsAdd", { fg = colors.mint })
+hi("GitSignsChange", { fg = colors.lavender })
+hi("GitSignsDelete", { fg = colors.dark_pink })
+
+-- Gitsigns current line blame
+hi("GitSignsCurrentLineBlame", { fg = "#505058", italic = true })
+
+-- Gitsigns preview (floating window)
+hi("GitSignsAddPreview", { fg = colors.mint, bg = "#2a3a2a" })
+hi("GitSignsDeletePreview", { fg = colors.light_purple, bg = "#3a2a2a" })
+
+-- Gitsigns inline preview (deleted virtual lines)
+hi("GitSignsDeleteVirtLn", { fg = colors.light_purple, bg = "#3a2a2a" })
+hi("GitSignsDeleteVirtLnInLine", { bg = "#6b2a2a" })
+
+-- Gitsigns word-level diff regions in inline previews
+hi("GitSignsAddInline", { bg = "#2a5a2a" })
+hi("GitSignsDeleteInline", { bg = "#6b2a2a" })
+hi("GitSignsChangeInline", { bg = "#2a2a5a" })
 
 -- LSP
 hi("LspInlayHint", { fg = "#505058", italic = true })
