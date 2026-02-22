@@ -6,5 +6,11 @@ return {
     { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diff view (working tree)" },
     { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
   },
-  opts = {},
+  opts = {
+    keymaps = {
+      view = { q = "<cmd>DiffviewClose<cr>" },
+      file_panel = { q = "<cmd>DiffviewClose<cr>" },
+      file_history_panel = { q = "<cmd>DiffviewClose<cr>" },
+    },
+  },
 }
