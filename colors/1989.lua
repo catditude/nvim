@@ -187,7 +187,7 @@ hi("DiagnosticUnderlineHint", { undercurl = true, sp = colors.mint })
 
 -- Gitsigns gutter signs
 hi("GitSignsAdd", { fg = colors.mint })
-hi("GitSignsChange", { fg = colors.lavender })
+hi("GitSignsChange", { fg = "#FFC067" })
 hi("GitSignsDelete", { fg = colors.dark_pink })
 
 -- Gitsigns current line blame

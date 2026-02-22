@@ -41,7 +41,7 @@ return {
       lualine_c = {
         {
           function()
-            return vim.fn.expand("%:~:h")
+            return vim.fn.pathshorten(vim.fn.expand("%:~:h"))
           end,
           icon = "",
           color = { fg = "#afafd7" },
