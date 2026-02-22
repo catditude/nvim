@@ -65,7 +65,7 @@ Create a Lua module in `lua/` and load it via `require()` in `init.lua`. See `lu
 ### Installed Plugins
 
 - **oil.nvim** — File explorer (edit filesystem like a buffer), `-` to open
-- **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers, `<leader>fh` help tags, `<leader>fk` keymaps
+- **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers, `<leader>fh` help tags, `<leader>fk` keymaps, `<leader>fs` git status
 - **flash.nvim** — Quick navigation/motions, `s` to jump
 - **gitsigns.nvim** — Git signs in the gutter, `<leader>hp` preview hunk, `<leader>hb` blame line, `<leader>hs/hr` stage/reset hunk, `]c`/`[c` navigate hunks, `<leader>tb` toggle line blame, `ih` hunk text object
 - **which-key.nvim** — Keybinding popup hints, `<leader>?` for buffer-local keymaps
@@ -73,7 +73,7 @@ Create a Lua module in `lua/` and load it via `require()` in `init.lua`. See `lu
 - **mason.nvim** — LSP/tool installer
 - **treesitter** — Syntax highlighting and parsing
 - **nvim-cmp** — Autocompletion (LSP, buffer, path sources), `<Tab>` to confirm, ghost text preview
-- **lazygit.nvim** — Full lazygit TUI inside Neovim, `<leader>lg` to open
+- **lazygit.nvim** — Full lazygit TUI inside Neovim, `<leader>lg` to open. Uses delta as diff pager (configured in `~/.config/lazygit/config.yml`)
 - **auto-session** — Automatic session save/restore per directory
 - **vim-tmux-navigator** — Seamless `<C-h/j/k/l>` navigation between Neovim splits and tmux panes, `<C-\>` for previous
 
@@ -117,3 +117,7 @@ vim.lsp.enable('rust_analyzer')
 |-----|--------|
 | `gd` | Go to definition |
 | `gr` | Find references |
+
+## External Dependencies
+
+- **delta** — Terminal diff pager used by git and lazygit. Configured in `~/.gitconfig` under `[delta]` with 1989-matching colors (diff backgrounds, line number colors, hunk header styling). Syntax highlighting uses delta's own syntect engine, not Neovim treesitter.
