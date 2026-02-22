@@ -57,10 +57,10 @@ hi("TabLineFill", { fg = colors.white, bg = colors.dark_gray })
 
 -- Diff
 hi("Define", { fg = colors.gray_purple })
-hi("DiffAdd", { fg = colors.white, bg = colors.dark_green, bold = true })
-hi("DiffDelete", { fg = colors.dark_pink })
-hi("DiffChange", { fg = colors.white, bg = colors.dark_gray })
-hi("DiffText", { fg = colors.white, bg = colors.dark_blue, bold = true })
+hi("DiffAdd", { bg = "#2a3a2a" })
+hi("DiffDelete", { bg = "#3a2a2a" })
+hi("DiffChange", { bg = "#2a2a3a" })
+hi("DiffText", { bg = "#2a5a2a", bold = true })
 hi("ErrorMsg", { fg = colors.white, bg = colors.dark_pink })
 hi("WarningMsg", { fg = colors.white, bg = colors.dark_pink })
 

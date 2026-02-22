@@ -71,8 +71,10 @@ Create a Lua module in `lua/` and load it via `require()` in `init.lua`. See `lu
 - **which-key.nvim** — Keybinding popup hints, `<leader>?` for buffer-local keymaps
 - **lualine.nvim** — Statusline (mode, branch, diff, diagnostics, filename, filetype, cursor position)
 - **mason.nvim** — LSP/tool installer
-- **treesitter** — Syntax highlighting and parsing
+- **mini.icons** — Icon provider, mocks `nvim-web-devicons` API for plugin compatibility
+- **treesitter** — Syntax highlighting and parsing (on `main` branch; uses `vim.treesitter.start()`, not `nvim-treesitter.configs`)
 - **nvim-cmp** — Autocompletion (LSP, buffer, path sources), `<Tab>` to confirm, ghost text preview
+- **diffview.nvim** — Side-by-side diff viewer with treesitter syntax highlighting, `<leader>gd` diff view, `<leader>gh` file history
 - **lazygit.nvim** — Full lazygit TUI inside Neovim, `<leader>lg` to open. Uses delta as diff pager (configured in `~/.config/lazygit/config.yml`)
 - **auto-session** — Automatic session save/restore per directory
 - **vim-tmux-navigator** — Seamless `<C-h/j/k/l>` navigation between Neovim splits and tmux panes, `<C-\>` for previous
