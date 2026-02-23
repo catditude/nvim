@@ -65,6 +65,7 @@ Create a Lua module in `lua/` and load it via `require()` in `init.lua`. See `lu
 ### Installed Plugins
 
 - **oil.nvim** — File explorer (edit filesystem like a buffer), `-` to open
+- **oil-git-status.nvim** — Git status icons in oil's sign column (modified, untracked, staged, etc.)
 - **telescope.nvim** — Fuzzy finder, `<leader>ff` files, `<leader>fg` grep, `<leader>fb` buffers, `<leader>fh` help tags, `<leader>fk` keymaps, `<leader>fs` git status
 - **flash.nvim** — Quick navigation/motions, `s` to jump
 - **gitsigns.nvim** — Git signs in the gutter, `<leader>hp` preview hunk, `<leader>hb` blame line, `<leader>hs/hr` stage/reset hunk, `]c`/`[c` navigate hunks, `<leader>tb` toggle line blame, `ih` hunk text object

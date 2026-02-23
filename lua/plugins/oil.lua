@@ -6,5 +6,9 @@ return {
   keys = {
     { "-", "<cmd>Oil<cr>", desc = "Open parent directory" },
   },
-  opts = {},
+  opts = {
+    win_options = {
+      signcolumn = "yes:2",
+    },
+  },
 }
