@@ -121,6 +121,12 @@ vim.lsp.enable('rust_analyzer')
 |-----|--------|
 | `gd` | Go to definition |
 | `gr` | Find references |
+| `gy` | Go to type definition |
+| `<leader>d` | Show diagnostic float |
+| `]d` / `[d` | Next / previous diagnostic |
+| `<leader>ca` | Code action (auto-fix, refactor) |
+| `<leader>cr` | Rename symbol |
+| `<leader>cf` | Format file |
 
 ## External Dependencies
 
