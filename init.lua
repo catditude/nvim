@@ -7,6 +7,8 @@ vim.opt.scrolloff = 999
 vim.opt.updatetime = 300
 vim.cmd.colorscheme("1989")
 
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
 require("lazy_init")
 require("lsp_setup")
 require("file_watcher")
