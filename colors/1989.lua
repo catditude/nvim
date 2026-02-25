@@ -208,5 +208,8 @@ hi("GitSignsAddInline", { bg = "#2a5a2a" })
 hi("GitSignsDeleteInline", { bg = "#6b2a2a" })
 hi("GitSignsChangeInline", { bg = "#2a2a5a" })
 
+-- Treesitter context (sticky scope header)
+hi("TreesitterContext", { bg = "#333333" })
+
 -- LSP
 hi("LspInlayHint", { fg = "#505058", italic = true })
