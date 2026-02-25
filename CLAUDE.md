@@ -70,11 +70,12 @@ Create a Lua module in `lua/` and load it via `require()` in `init.lua`. See `lu
 - **flash.nvim** — Quick navigation/motions, `s` to jump
 - **gitsigns.nvim** — Git signs in the gutter, `<leader>hp` preview hunk, `<leader>hb` blame line, `<leader>hs/hr` stage/reset hunk, `]c`/`[c` navigate hunks, `<leader>tb` toggle line blame, `ih` hunk text object
 - **which-key.nvim** — Keybinding popup hints, `<leader>?` for buffer-local keymaps
-- **lualine.nvim** — Statusline (mode, branch, diff, diagnostics, filename, filetype, cursor position)
+- **lualine.nvim** — Statusline (mode, branch, diff, diagnostics, filename, navic breadcrumbs, filetype, cursor position)
+- **nvim-navic** — LSP breadcrumbs in statusline showing code location (e.g., `MyStruct > impl Display > fmt`), auto-attaches to LSP servers
 - **mason.nvim** — LSP/tool installer
 - **mini.icons** — Icon provider, mocks `nvim-web-devicons` API for plugin compatibility
 - **treesitter** — Syntax highlighting and parsing (on `main` branch; uses `vim.treesitter.start()`, not `nvim-treesitter.configs`)
-- **treesitter-context** — Sticky scope header showing enclosing `impl`, `fn`, `class`, etc. at top of window (max 3 lines)
+- **treesitter-context** — Sticky scope header showing enclosing `impl`, `fn`, `class`, etc. at top of window (max 1 line)
 - **nvim-cmp** — Autocompletion (LSP, buffer, path sources), `<Tab>` to confirm, ghost text preview
 - **diffview.nvim** — Side-by-side diff viewer with treesitter syntax highlighting, `<leader>gd` diff view, `<leader>gh` file history
 - **lazygit.nvim** — Full lazygit TUI inside Neovim, `<leader>lg` to open. Uses delta as diff pager (configured in `~/.config/lazygit/config.yml`)
