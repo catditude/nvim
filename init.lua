@@ -9,6 +9,9 @@ vim.cmd.colorscheme("1989")
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+vim.keymap.set({"n", "v"}, "<leader>y", '"+y')
+vim.keymap.set({"n", "v"}, "<leader>p", '"+p')
+
 require("lazy_init")
 require("lsp_setup")
 require("file_watcher")
