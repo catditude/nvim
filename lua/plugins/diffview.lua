@@ -7,6 +7,12 @@ return {
     { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
   },
   opts = {
+    hooks = {
+      diff_buf_read = function(bufnr)
+        -- Trigger BufReadPost so treesitter-context recognizes diff buffers
+        vim.api.nvim_exec_autocmds("BufReadPost", { buffer = bufnr })
+      end,
+    },
     keymaps = {
       view = { q = "<cmd>DiffviewClose<cr>" },
       file_panel = { q = "<cmd>DiffviewClose<cr>" },
