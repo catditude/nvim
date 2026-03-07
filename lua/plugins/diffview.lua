@@ -3,11 +3,12 @@ return {
   "sindrets/diffview.nvim",
   cmd = { "DiffviewOpen", "DiffviewFileHistory" },
   keys = {
-    { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diff view (working tree)" },
+    { "<leader>gd", "<cmd>DiffviewOpen --imply-local<cr>", desc = "Diff view (working tree)" },
     { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
   },
   opts = {
     enhanced_diff_hl = true,
+    file_panel = { listing_style = "tree" },
     view = {
       default = { winbar_info = true },
       file_history = { winbar_info = true },
@@ -16,6 +17,10 @@ return {
       diff_buf_read = function(bufnr)
         -- Trigger BufReadPost so treesitter-context recognizes diff buffers
         vim.api.nvim_exec_autocmds("BufReadPost", { buffer = bufnr })
+      end,
+      diff_buf_win_enter = function(bufnr, winid)
+        -- Show full file content without folding unchanged lines
+        vim.wo[winid].foldenable = false
       end,
       view_opened = function()
         -- Hide the default tabline (shows file paths when diffview creates a new tab)
