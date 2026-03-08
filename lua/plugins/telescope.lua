@@ -12,9 +12,9 @@ return {
     { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
     { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
     { "<leader>fk", "<cmd>Telescope keymaps<cr>", desc = "Keymaps" },
-    { "<leader>fs", "<cmd>Telescope git_status<cr>", desc = "Git status" },
     { "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
-    { "<leader>fo", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document symbols (outline)" },
+    { "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document symbols" },
+    { "<leader>fS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Workspace symbols (global)" },
   },
   opts = {},
 }
