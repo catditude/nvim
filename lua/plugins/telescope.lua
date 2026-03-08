@@ -1,4 +1,30 @@
 -- Fuzzy finder for files, grep, buffers, and more
+
+-- Map all LSP SymbolKind values to existing syntax highlight groups
+local symbol_highlights = {
+  Class = "Type",
+  Constant = "Constant",
+  Constructor = "Function",
+  Enum = "Type",
+  EnumMember = "Constant",
+  Event = "Special",
+  Field = "TelescopeResultsField",
+  Function = "Function",
+  Interface = "Type",
+  Key = "Identifier",
+  Method = "Function",
+  Module = "Keyword",
+  Namespace = "Keyword",
+  Object = "Type",
+  Operator = "Operator",
+  Package = "Keyword",
+  Property = "TelescopeResultsField",
+  String = "String",
+  Struct = "Type",
+  TypeParameter = "Type",
+  Variable = "TelescopeResultsVariable",
+}
+
 return {
   "nvim-telescope/telescope.nvim",
   version = "*",
@@ -13,8 +39,16 @@ return {
     { "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help tags" },
     { "<leader>fk", "<cmd>Telescope keymaps<cr>", desc = "Keymaps" },
     { "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
-    { "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document symbols" },
-    { "<leader>fS", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Workspace symbols (global)" },
+    {
+      "<leader>fs",
+      function() require("telescope.builtin").lsp_document_symbols({ symbol_highlights = symbol_highlights }) end,
+      desc = "Document symbols",
+    },
+    {
+      "<leader>fS",
+      function() require("telescope.builtin").lsp_dynamic_workspace_symbols({ symbol_highlights = symbol_highlights }) end,
+      desc = "Workspace symbols (global)",
+    },
   },
   opts = {},
 }

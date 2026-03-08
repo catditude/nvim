@@ -226,5 +226,15 @@ hi("NavicIconsConstant", { fg = colors.mint })
 hi("NavicIconsField", { fg = colors.lavender })
 hi("NavicIconsProperty", { fg = colors.lavender })
 
+-- Telescope symbol kinds
+hi("TelescopeResultsFunction", { fg = colors.light_purple })
+hi("TelescopeResultsMethod", { fg = colors.light_purple })
+hi("TelescopeResultsClass", { fg = colors.mint })
+hi("TelescopeResultsStruct", { fg = colors.mint })
+hi("TelescopeResultsConstant", { fg = colors.mint })
+hi("TelescopeResultsField", { fg = colors.lavender })
+hi("TelescopeResultsVariable", { fg = colors.light_yellow })
+hi("TelescopeResultsOperator", { fg = colors.pink })
+
 -- LSP
 hi("LspInlayHint", { fg = "#505058", italic = true })
