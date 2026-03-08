@@ -39,9 +39,9 @@ Leader is **Space**.
 | `<leader>fb` | Buffers |
 | `<leader>fh` | Help tags |
 | `<leader>fk` | Keymaps |
-| `<leader>fs` | Git status |
 | `<leader>fd` | Diagnostics |
-| `<leader>fo` | Document symbols (outline) |
+| `<leader>fs` | Document symbols |
+| `<leader>fS` | Workspace symbols (global) |
 
 ### LSP
 
