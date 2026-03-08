@@ -14,6 +14,7 @@ return {
     { "<leader>fk", "<cmd>Telescope keymaps<cr>", desc = "Keymaps" },
     { "<leader>fs", "<cmd>Telescope git_status<cr>", desc = "Git status" },
     { "<leader>fd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
+    { "<leader>fo", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document symbols (outline)" },
   },
   opts = {},
 }

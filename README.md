@@ -41,6 +41,7 @@ Leader is **Space**.
 | `<leader>fk` | Keymaps |
 | `<leader>fs` | Git status |
 | `<leader>fd` | Diagnostics |
+| `<leader>fo` | Document symbols (outline) |
 
 ### LSP
 
