@@ -6,6 +6,11 @@ return {
     { "<leader>gd", "<cmd>DiffviewOpen --imply-local<cr>", desc = "Diff view (working tree)" },
     { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
   },
+  config = function(_, opts)
+    require("diffview").setup(opts)
+    vim.api.nvim_set_hl(0, "DiffviewFilePanelInsertions", { fg = "#b5e8b0" })
+    vim.api.nvim_set_hl(0, "DiffviewFilePanelDeletions", { fg = "#e88a8a" })
+  end,
   opts = {
     enhanced_diff_hl = true,
     file_panel = { listing_style = "tree" },
