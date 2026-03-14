@@ -6,26 +6,46 @@ vim.g.colors_name = "1989"
 vim.o.background = "dark"
 
 -- Color palette
--- Grays:   dark_gray < light_gray < mid_gray < white
--- Purples: gray_purple (muted) < lavender (cool) < light_purple (warm blush)
--- Pinks:   pink (medium) < light_purple (light rose) | dark_pink (vivid)
--- Blues:   dark_blue < light_blue
--- Others:  mint (green), light_yellow (cream), dark_green
 local colors = {
+  -- Grays
   dark_gray = "#1c1c1c",
-  mid_gray = "#878787",
+  charcoal = "#262626",
+  dim_gray = "#303030",
+  soft_gray = "#333333",
   light_gray = "#444444",
+  muted = "#505058",
+  comment_gray = "#6a6a7a",
+  mid_gray = "#878787",
   white = "#FFFFFF",
+  -- Purples / Pinks
   lavender = "#dfafff",
   light_purple = "#F0C4C8",
   gray_purple = "#afafd7",
   pink = "#f075a0",
+  dark_pink = "#ff005f",
+  flash_pink = "#FF8DA1",
+  -- Blues
   light_blue = "#A2CFFE",
+  dark_blue = "#0087af",
+  -- Greens / Yellows
   mint = "#9EB294",
   light_yellow = "#ffffaf",
-  dark_pink = "#ff005f",
   dark_green = "#00875f",
-  dark_blue = "#0087af",
+  orange = "#FFC067",
+  -- Diff backgrounds
+  diff_add = "#2a3a2a",
+  diff_delete = "#3a2a2a",
+  diff_change = "#2a2a3a",
+  diff_text = "#2a5a2a",
+  diff_delete_strong = "#6b2a2a",
+  diff_change_strong = "#2a2a5a",
+  -- Search
+  search_bg = "#4a4a1a",
+  -- Diffview panel
+  diffview_insert = "#b5e8b0",
+  diffview_delete = "#e88a8a",
+  -- Diagnostic underlines
+  error_undercurl = "#e06070",
 }
 
 local function hi(group, opts)
@@ -36,8 +56,8 @@ end
 hi("Normal", { fg = colors.white, bg = colors.dark_gray })
 hi("Cursor", { fg = colors.dark_gray, bg = colors.white })
 hi("Visual", { bg = colors.light_gray, blend = 50 })
-hi("CursorLine", { bg = "#262626" })
-hi("CursorLineNr", { fg = colors.white, bg = "#262626", bold = true })
+hi("CursorLine", { bg = colors.charcoal })
+hi("CursorLineNr", { fg = colors.white, bg = colors.charcoal, bold = true })
 hi("CursorColumn", { bg = colors.light_gray })
 hi("ColorColumn", { bg = colors.light_gray })
 hi("LineNr", { fg = colors.mid_gray, bg = colors.dark_gray })
@@ -48,7 +68,7 @@ hi("StatusLineNC", { fg = colors.white, bg = colors.mid_gray })
 hi("Pmenu", {})
 hi("PmenuSel", { bg = colors.dark_gray })
 hi("IncSearch", { fg = colors.dark_gray, bg = colors.light_yellow })
-hi("Search", { fg = colors.white, bg = "#4a4a1a" })
+hi("Search", { fg = colors.white, bg = colors.search_bg })
 hi("CurSearch", { fg = colors.dark_gray, bg = colors.light_yellow })
 hi("Directory", { fg = colors.lavender })
 hi("Folded", { fg = colors.light_yellow, bg = colors.dark_gray })
@@ -59,17 +79,17 @@ hi("TabLineFill", { fg = colors.white, bg = colors.dark_gray })
 
 -- Diff
 hi("Define", { fg = colors.gray_purple })
-hi("DiffAdd", { bg = "#2a3a2a" })
-hi("DiffDelete", { bg = "#3a2a2a" })
-hi("DiffChange", { bg = "#2a2a3a" })
-hi("DiffText", { bg = "#2a5a2a", bold = true })
+hi("DiffAdd", { bg = colors.diff_add })
+hi("DiffDelete", { bg = colors.diff_delete })
+hi("DiffChange", { bg = colors.diff_change })
+hi("DiffText", { bg = colors.diff_text, bold = true })
 hi("ErrorMsg", { fg = colors.white, bg = colors.dark_pink })
 hi("WarningMsg", { fg = colors.white, bg = colors.dark_pink })
 
 -- Syntax
 hi("Boolean", { fg = colors.lavender })
 hi("Character", { fg = colors.lavender })
-hi("Comment", { fg = "#6a6a7a" })
+hi("Comment", { fg = colors.comment_gray })
 hi("Conditional", { fg = colors.pink })
 hi("Constant", { fg = colors.mint })
 hi("Float", { fg = colors.lavender })
@@ -182,34 +202,34 @@ hi("DiagnosticError", { fg = colors.dark_pink })
 hi("DiagnosticWarn", { fg = colors.light_yellow })
 hi("DiagnosticInfo", { fg = colors.light_blue })
 hi("DiagnosticHint", { fg = colors.mint })
-hi("DiagnosticUnderlineError", { undercurl = true, sp = "#e06070" })
+hi("DiagnosticUnderlineError", { undercurl = true, sp = colors.error_undercurl })
 hi("DiagnosticUnderlineWarn", { undercurl = true, sp = colors.light_yellow })
 hi("DiagnosticUnderlineInfo", { undercurl = true, sp = colors.light_blue })
 hi("DiagnosticUnderlineHint", { undercurl = true, sp = colors.mint })
 
 -- Gitsigns gutter signs
 hi("GitSignsAdd", { fg = colors.mint })
-hi("GitSignsChange", { fg = "#FFC067" })
+hi("GitSignsChange", { fg = colors.orange })
 hi("GitSignsDelete", { fg = colors.dark_pink })
 
 -- Gitsigns current line blame
-hi("GitSignsCurrentLineBlame", { fg = "#505058", italic = true })
+hi("GitSignsCurrentLineBlame", { fg = colors.muted, italic = true })
 
 -- Gitsigns preview (floating window)
-hi("GitSignsAddPreview", { fg = colors.mint, bg = "#2a3a2a" })
-hi("GitSignsDeletePreview", { fg = colors.light_purple, bg = "#3a2a2a" })
+hi("GitSignsAddPreview", { fg = colors.mint, bg = colors.diff_add })
+hi("GitSignsDeletePreview", { fg = colors.light_purple, bg = colors.diff_delete })
 
 -- Gitsigns inline preview (deleted virtual lines)
-hi("GitSignsDeleteVirtLn", { fg = colors.light_purple, bg = "#3a2a2a" })
-hi("GitSignsDeleteVirtLnInLine", { bg = "#6b2a2a" })
+hi("GitSignsDeleteVirtLn", { fg = colors.light_purple, bg = colors.diff_delete })
+hi("GitSignsDeleteVirtLnInLine", { bg = colors.diff_delete_strong })
 
 -- Gitsigns word-level diff regions in inline previews
-hi("GitSignsAddInline", { bg = "#2a5a2a" })
-hi("GitSignsDeleteInline", { bg = "#6b2a2a" })
-hi("GitSignsChangeInline", { bg = "#2a2a5a" })
+hi("GitSignsAddInline", { bg = colors.diff_text })
+hi("GitSignsDeleteInline", { bg = colors.diff_delete_strong })
+hi("GitSignsChangeInline", { bg = colors.diff_change_strong })
 
 -- Treesitter context (sticky scope header)
-hi("TreesitterContext", { bg = "#333333" })
+hi("TreesitterContext", { bg = colors.soft_gray })
 
 -- Navic breadcrumbs (statusline code location)
 hi("NavicText", { fg = colors.white })
@@ -237,7 +257,7 @@ hi("TelescopeResultsVariable", { fg = colors.light_yellow })
 hi("TelescopeResultsOperator", { fg = colors.pink })
 
 -- Indent guides (blink.indent)
-hi("BlinkIndent", { fg = "#303030" })
+hi("BlinkIndent", { fg = colors.dim_gray })
 hi("BlinkIndentScope", { fg = colors.gray_purple })
 
 -- Dashboard (snacks.nvim)
@@ -253,4 +273,11 @@ hi("NoiceCmdlineIcon", { fg = colors.pink })
 hi("NoiceCmdlineIconSearch", { fg = colors.light_yellow })
 
 -- LSP
-hi("LspInlayHint", { fg = "#505058", italic = true })
+hi("LspInlayHint", { fg = colors.muted, italic = true })
+
+-- Diffview file panel
+hi("DiffviewFilePanelInsertions", { fg = colors.diffview_insert })
+hi("DiffviewFilePanelDeletions", { fg = colors.diffview_delete })
+
+-- Flash
+hi("FlashLabel", { fg = colors.dark_gray, bg = colors.flash_pink, bold = true })

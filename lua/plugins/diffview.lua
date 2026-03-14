@@ -6,11 +6,6 @@ return {
     { "<leader>gd", "<cmd>DiffviewOpen --imply-local<cr>", desc = "Diff view (working tree)" },
     { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
   },
-  config = function(_, opts)
-    require("diffview").setup(opts)
-    vim.api.nvim_set_hl(0, "DiffviewFilePanelInsertions", { fg = "#b5e8b0" })
-    vim.api.nvim_set_hl(0, "DiffviewFilePanelDeletions", { fg = "#e88a8a" })
-  end,
   opts = {
     enhanced_diff_hl = true,
     file_panel = { listing_style = "tree" },
@@ -29,10 +24,12 @@ return {
       end,
       view_opened = function()
         -- Hide the default tabline (shows file paths when diffview creates a new tab)
+        vim._diffview_saved_showtabline = vim.o.showtabline
         vim.opt.showtabline = 0
       end,
       view_closed = function()
-        vim.opt.showtabline = 1
+        vim.opt.showtabline = vim._diffview_saved_showtabline or 1
+        vim._diffview_saved_showtabline = nil
       end,
     },
     keymaps = {
