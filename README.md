@@ -105,6 +105,9 @@ Leader is **Space**.
 - **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes
 - **treesitter-context** — sticky scope header (1 line max) showing enclosing function/struct/class
 - **mason.nvim** — LSP/tool installer
+- **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session)
+- **blink.indent** — fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
+- **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
 - **mini.icons** — icon provider
 - **auto-session** — auto save/restore sessions per directory
 - **vim-tmux-navigator** — seamless split/pane navigation with tmux
@@ -142,7 +145,7 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 Polls open files every 1 second with `vim.uv.new_fs_poll()` and runs `checktime` when changes are detected. Useful when external tools (formatters, git operations) modify files outside nvim.
 
 ### 1989 colorscheme (`colors/1989.lua`)
-Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
+Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, indent guides (blink.indent), dashboard (snacks.nvim), noice.nvim cmdline, and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
 
 ## Settings
 

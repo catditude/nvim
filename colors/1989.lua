@@ -236,5 +236,21 @@ hi("TelescopeResultsField", { fg = colors.lavender })
 hi("TelescopeResultsVariable", { fg = colors.light_yellow })
 hi("TelescopeResultsOperator", { fg = colors.pink })
 
+-- Indent guides (blink.indent)
+hi("BlinkIndent", { fg = "#303030" })
+hi("BlinkIndentScope", { fg = colors.gray_purple })
+
+-- Dashboard (snacks.nvim)
+hi("SnacksDashboardHeader", { fg = colors.light_purple })
+hi("SnacksDashboardKey", { fg = colors.pink, bold = true })
+hi("SnacksDashboardDesc", { fg = colors.white })
+hi("SnacksDashboardIcon", { fg = colors.lavender })
+hi("SnacksDashboardFooter", { fg = colors.mid_gray })
+
+-- Noice (cmdline + messages)
+hi("NoiceCmdlinePopupBorder", { fg = colors.gray_purple })
+hi("NoiceCmdlineIcon", { fg = colors.pink })
+hi("NoiceCmdlineIconSearch", { fg = colors.light_yellow })
+
 -- LSP
 hi("LspInlayHint", { fg = "#505058", italic = true })
