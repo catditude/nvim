@@ -88,6 +88,7 @@ Leader is **Space**.
 |-----|-------------|
 | `-` | Open parent directory (oil.nvim) |
 | `s` | Flash jump |
+| `]t` / `[t` | Next / prev todo comment |
 | `<leader>?` | Which-key (buffer keymaps) |
 
 ## Plugins
@@ -108,6 +109,7 @@ Leader is **Space**.
 - **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session)
 - **blink.indent** — fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
+- **todo-comments.nvim** — colorized TODO/FIXME/HACK/NOTE highlights with `]t`/`[t` navigation, `:TodoTelescope` search
 - **mini.icons** — icon provider
 - **auto-session** — auto save/restore sessions per directory
 - **vim-tmux-navigator** — seamless split/pane navigation with tmux
