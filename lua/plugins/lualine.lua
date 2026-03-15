@@ -26,14 +26,17 @@ return {
         },
         {
           function()
-            local signs = vim.b.gitsigns_head and vim.b.gitsigns_status_dict
-            if not signs then return "" end
+            local ahead = vim.g._git_ahead or 0
+            local behind = vim.g._git_behind or 0
             local parts = {}
-            if (signs.ahead or 0) > 0 then table.insert(parts, "↑" .. signs.ahead) end
-            if (signs.behind or 0) > 0 then table.insert(parts, "↓" .. signs.behind) end
+            if ahead > 0 then table.insert(parts, "↑" .. ahead) end
+            if behind > 0 then table.insert(parts, "↓" .. behind) end
             return table.concat(parts, " ")
           end,
-          color = { fg = "#00bcd4" },
+          cond = function()
+            return (vim.g._git_ahead or 0) > 0 or (vim.g._git_behind or 0) > 0
+          end,
+          color = { fg = "#A2CFFE" },
           padding = { left = 0, right = 1 },
         },
         "diff",

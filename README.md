@@ -114,7 +114,7 @@ Leader is **Space**.
 - **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes
 - **treesitter-context** — sticky scope header (1 line max) showing enclosing function/struct/class
 - **mason.nvim** — LSP/tool installer
-- **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session)
+- **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status
 - **blink.indent** — fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
 - **todo-comments.nvim** — colorized TODO/FIXME/HACK/NOTE highlights with `]t`/`[t` navigation, `:TodoTelescope` search
@@ -153,6 +153,9 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 
 ### File watcher (`lua/file_watcher.lua`)
 Polls open files every 1 second with `vim.uv.new_fs_poll()` and runs `checktime` when changes are detected. Useful when external tools (formatters, git operations) modify files outside nvim.
+
+### Git ahead/behind (`lua/git_ahead_behind.lua`)
+Periodically queries `git rev-list --left-right --count HEAD...@{upstream}` to populate `vim.g._git_ahead` and `vim.g._git_behind` for the lualine statusline. Refreshes every 30 seconds, on focus gain, and after buffer writes.
 
 ### 1989 colorscheme (`colors/1989.lua`)
 Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, indent guides (blink.indent), dashboard (snacks.nvim), noice.nvim cmdline, and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
