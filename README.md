@@ -89,6 +89,10 @@ Leader is **Space**.
 | `S-h` | Previous buffer |
 | `S-l` | Next buffer |
 | `<leader>bd` | Close buffer |
+| `<leader>bo` | Close other buffers |
+| `<leader>br` | Close buffers to the right |
+| `<leader>bl` | Close buffers to the left |
+| `<leader>ba` | Close all buffers |
 
 ### Navigation
 

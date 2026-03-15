@@ -24,7 +24,7 @@ Neovim 0.11+ config using **lazy.nvim**. Minimal and modular.
 All custom Lua modules go in `lua/`. Only Neovim-required paths (`init.lua`, `colors/`) stay at root.
 
 ```
-init.lua              → Entry point, loads lazy_init, lsp_setup, and file_watcher
+init.lua              → Entry point: options, keymaps, and requires for lua/ modules
 lua/lazy_init.lua     → Bootstraps lazy.nvim, imports plugins from lua/plugins/
 lua/lsp_setup.lua     → Native LSP configuration (enables servers, keymaps)
 lua/file_watcher.lua  → Auto-reloads buffers when files change externally (libuv polling)
