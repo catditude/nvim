@@ -261,7 +261,7 @@ hi("BlinkIndent", { fg = colors.dim_gray })
 hi("BlinkIndentScope", { fg = colors.gray_purple })
 
 -- Dashboard (snacks.nvim)
-hi("SnacksDashboardHeader", { fg = colors.light_pink })
+hi("SnacksDashboardHeader", { fg = colors.light_blue })
 hi("SnacksDashboardKey", { fg = colors.pink, bold = true })
 hi("SnacksDashboardDesc", { fg = colors.white })
 hi("SnacksDashboardIcon", { fg = colors.light_pink })
