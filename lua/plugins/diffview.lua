@@ -10,8 +10,8 @@ return {
     enhanced_diff_hl = true,
     file_panel = { listing_style = "tree" },
     view = {
-      default = { winbar_info = true },
-      file_history = { winbar_info = true },
+      default = { layout = "diff2_vertical", winbar_info = true },
+      file_history = { layout = "diff2_vertical", winbar_info = true },
     },
     hooks = {
       diff_buf_read = function(bufnr)
