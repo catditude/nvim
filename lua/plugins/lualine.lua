@@ -5,7 +5,7 @@ return {
   event = "VeryLazy",
   opts = {
     options = {
-      theme = "seoul256",
+      theme = "1989",
       icons_enabled = true,
       component_separators = { left = "", right = "" },
       section_separators = { left = "", right = "" },
