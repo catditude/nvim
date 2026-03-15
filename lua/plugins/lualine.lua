@@ -3,6 +3,18 @@ return {
   "nvim-lualine/lualine.nvim",
   dependencies = { "SmiteshP/nvim-navic" },
   event = "VeryLazy",
+  config = function(_, opts)
+    require("lualine").setup(opts)
+    -- Lualine's setup() forces showtabline=2 and laststatus=3. Since lualine
+    -- loads on VeryLazy (after the dashboard is already open), this overrides
+    -- the values set by the SnacksDashboardOpened autocmd in snacks.lua.
+    -- Re-apply here so the bars stay hidden on startup. Do NOT remove this —
+    -- the snacks autocmd alone is not enough due to this load-order race.
+    if vim.bo.filetype == "snacks_dashboard" then
+      vim.o.showtabline = 0
+      vim.o.laststatus = 0
+    end
+  end,
   opts = {
     options = {
       theme = "1989",

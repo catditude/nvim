@@ -10,6 +10,24 @@ return {
                 vim.defer_fn(Snacks.dashboard.update, 100)
             end,
         })
+        -- Hide statusline/tabline on dashboard. The SnacksDashboardOpened autocmd
+        -- handles subsequent opens, but on startup lualine loads later (VeryLazy)
+        -- and overrides these values — see the config function in lualine.lua
+        -- which re-applies after setup(). Both pieces are required.
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "SnacksDashboardOpened",
+            callback = function()
+                vim.o.showtabline = 0
+                vim.o.laststatus = 0
+            end,
+        })
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "SnacksDashboardClosed",
+            callback = function()
+                vim.o.showtabline = 2
+                vim.o.laststatus = 3
+            end,
+        })
     end,
     ---@type snacks.Config
     opts = {
