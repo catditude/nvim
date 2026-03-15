@@ -61,7 +61,6 @@ return {
                     ttl = 5 * 60,
                     indent = 3,
                 },
-                { section = "startup" },
             },
         },
     },
