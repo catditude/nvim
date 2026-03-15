@@ -13,6 +13,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set({"n", "v"}, "<leader>y", '"+y')
 vim.keymap.set({"n", "v"}, "<leader>p", '"+p')
 
+vim.keymap.set("n", "<S-h>", "<cmd>bprevious<CR>")
+vim.keymap.set("n", "<S-l>", "<cmd>bnext<CR>")
+vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>")
+
 require("lazy_init")
 require("lsp_setup")
 require("file_watcher")

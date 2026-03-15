@@ -58,5 +58,9 @@ return {
       lualine_y = { "progress" },
       lualine_z = { "location" },
     },
+    tabline = {
+      lualine_a = { { "buffers", icons_enabled = true, mode = 2 } },
+      lualine_z = { "tabs" },
+    },
   },
 }
