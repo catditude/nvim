@@ -264,7 +264,7 @@ hi("BlinkIndentScope", { fg = colors.gray_purple })
 hi("SnacksDashboardHeader", { fg = colors.light_pink })
 hi("SnacksDashboardKey", { fg = colors.pink, bold = true })
 hi("SnacksDashboardDesc", { fg = colors.white })
-hi("SnacksDashboardIcon", { fg = colors.lavender })
+hi("SnacksDashboardIcon", { fg = colors.light_pink })
 hi("SnacksDashboardFooter", { fg = colors.mid_gray })
 
 -- Noice (cmdline + messages)
