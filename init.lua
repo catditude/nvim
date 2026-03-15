@@ -16,6 +16,9 @@ vim.keymap.set({"n", "v"}, "<leader>p", '"+p')
 vim.keymap.set("n", "<S-h>", "<cmd>bprevious<CR>")
 vim.keymap.set("n", "<S-l>", "<cmd>bnext<CR>")
 vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>")
+for i = 1, 9 do
+  vim.keymap.set("n", "<leader>" .. i, "<cmd>LualineBuffersJump " .. i .. "<CR>")
+end
 
 require("lazy_init")
 require("lsp_setup")
