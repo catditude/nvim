@@ -2,6 +2,15 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
+    init = function()
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "SnacksDashboardOpened",
+            once = true,
+            callback = function()
+                vim.defer_fn(Snacks.dashboard.update, 100)
+            end,
+        })
+    end,
     ---@type snacks.Config
     opts = {
         dashboard = {
@@ -53,8 +62,8 @@ return {
                     title = "Git Status",
                     section = "terminal",
                     enabled = function()
-                        return Snacks.git.get_root() ~= nil
-                    end,
+                    	return Snacks.git.get_root() ~= nil
+		    end,
                     cmd = "git status --short --branch --renames",
                     height = 5,
                     padding = 1,
