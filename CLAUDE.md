@@ -80,3 +80,16 @@ vim.lsp.enable('rust_analyzer')
 ### LSP Gotcha: Two-step Registration
 
 Configs live in `lua/lsp/` (Lua require path), but `vim.lsp.enable()` only searches `lsp/` on the runtimepath (e.g. `~/.config/nvim/lsp/`). Since our configs are in `lua/lsp/`, you **must** call `vim.lsp.config()` with `require()` before `vim.lsp.enable()`. Omitting the `vim.lsp.config()` call means the config is silently ignored — the server may start with Neovim's built-in defaults instead.
+
+## Colorscheme Conventions
+
+All highlight groups — including plugin-specific ones — go in `colors/1989.lua`, not in plugin `config` callbacks. This keeps theming centralized.
+
+Every hex color must be a named entry in the `colors` palette table at the top of the file. Never use raw hex literals in `hi()` calls.
+
+## Neovim API (0.11+)
+
+Use modern APIs — avoid deprecated ones:
+- `vim.uv` not `vim.loop`
+- `vim.diagnostic.jump({ count = N })` not `vim.diagnostic.goto_next/prev`
+- libuv handles: always call both `:stop()` and `:close()` to avoid fd leaks
