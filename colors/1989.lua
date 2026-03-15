@@ -19,7 +19,7 @@ local colors = {
   white = "#FFFFFF",
   -- Purples / Pinks
   lavender = "#dfafff",
-  light_purple = "#F0C4C8",
+  light_pink = "#F0C4C8",
   gray_purple = "#afafd7",
   pink = "#f075a0",
   dark_pink = "#ff005f",
@@ -74,7 +74,7 @@ hi("Directory", { fg = colors.lavender })
 hi("Folded", { fg = colors.light_yellow, bg = colors.dark_gray })
 hi("FloatBorder", { fg = colors.gray_purple, bg = colors.dark_gray })
 hi("TabLine", { fg = colors.white, bg = colors.dark_gray })
-hi("TabLineSel", { fg = colors.light_purple, bg = colors.dark_gray })
+hi("TabLineSel", { fg = colors.light_pink, bg = colors.dark_gray })
 hi("TabLineFill", { fg = colors.white, bg = colors.dark_gray })
 
 -- Diff
@@ -93,15 +93,15 @@ hi("Comment", { fg = colors.comment_gray })
 hi("Conditional", { fg = colors.pink })
 hi("Constant", { fg = colors.mint })
 hi("Float", { fg = colors.lavender })
-hi("Function", { fg = colors.light_purple })
-hi("Identifier", { fg = colors.light_purple })
+hi("Function", { fg = colors.light_pink })
+hi("Identifier", { fg = colors.light_pink })
 hi("Keyword", { fg = colors.pink })
 hi("Label", { fg = colors.light_yellow })
 hi("NonText", { fg = colors.white, bg = colors.dark_gray })
 hi("Number", { fg = colors.mint })
 hi("Operator", { fg = colors.pink })
 hi("PreProc", { fg = colors.pink })
-hi("Special", { fg = colors.light_purple })
+hi("Special", { fg = colors.light_pink })
 hi("SpecialKey", { fg = colors.white, bg = colors.dark_gray })
 hi("Statement", { fg = colors.pink })
 hi("SpellBad", { fg = colors.pink, underline = true })
@@ -116,8 +116,8 @@ hi("Underlined", { underline = true })
 
 -- Ruby
 hi("rubyClass", { fg = colors.pink })
-hi("rubyFunction", { fg = colors.light_purple })
-hi("rubySymbol", { fg = colors.light_purple })
+hi("rubyFunction", { fg = colors.light_pink })
+hi("rubySymbol", { fg = colors.light_pink })
 hi("rubyConstant", { fg = colors.mint })
 hi("rubyStringDelimiter", { fg = colors.light_blue })
 hi("rubyBlockParameter", { fg = colors.pink })
@@ -140,7 +140,7 @@ hi("rubyRailsARMethod", { fg = colors.mint })
 hi("rubyRailsRenderMethod", { fg = colors.mint })
 hi("rubyRailsMethod", { fg = colors.mint })
 hi("rubyArrayDelimiter", { fg = colors.pink })
-hi("rubyInterpolation", { fg = colors.light_purple })
+hi("rubyInterpolation", { fg = colors.light_pink })
 hi("rubyInterpolationDelimiter", { fg = colors.pink })
 
 -- ERB
@@ -159,7 +159,7 @@ hi("javaScriptFunction", { fg = colors.mint })
 hi("javaScriptRailsFunction", { fg = colors.mint })
 hi("javaScriptBraces", {})
 hi("jsThis", { fg = colors.pink })
-hi("jsBraces", { fg = colors.light_purple })
+hi("jsBraces", { fg = colors.light_pink })
 hi("jsGlobalObjects", { fg = colors.mint })
 
 -- YAML
@@ -182,7 +182,7 @@ hi("cssBraces", {})
 
 -- CoffeeScript
 hi("coffeeCurly", { fg = colors.lavender })
-hi("coffeeObjAssign", { fg = colors.light_purple })
+hi("coffeeObjAssign", { fg = colors.light_pink })
 
 -- CJSX
 hi("cjsxAttribProperty", { fg = colors.lavender })
@@ -217,10 +217,10 @@ hi("GitSignsCurrentLineBlame", { fg = colors.muted, italic = true })
 
 -- Gitsigns preview (floating window)
 hi("GitSignsAddPreview", { fg = colors.mint, bg = colors.diff_add })
-hi("GitSignsDeletePreview", { fg = colors.light_purple, bg = colors.diff_delete })
+hi("GitSignsDeletePreview", { fg = colors.light_pink, bg = colors.diff_delete })
 
 -- Gitsigns inline preview (deleted virtual lines)
-hi("GitSignsDeleteVirtLn", { fg = colors.light_purple, bg = colors.diff_delete })
+hi("GitSignsDeleteVirtLn", { fg = colors.light_pink, bg = colors.diff_delete })
 hi("GitSignsDeleteVirtLnInLine", { bg = colors.diff_delete_strong })
 
 -- Gitsigns word-level diff regions in inline previews
@@ -234,8 +234,8 @@ hi("TreesitterContext", { bg = colors.soft_gray })
 -- Navic breadcrumbs (statusline code location)
 hi("NavicText", { fg = colors.white })
 hi("NavicSeparator", { fg = colors.gray_purple })
-hi("NavicIconsFunction", { fg = colors.light_purple })
-hi("NavicIconsMethod", { fg = colors.light_purple })
+hi("NavicIconsFunction", { fg = colors.light_pink })
+hi("NavicIconsMethod", { fg = colors.light_pink })
 hi("NavicIconsStruct", { fg = colors.mint })
 hi("NavicIconsClass", { fg = colors.mint })
 hi("NavicIconsModule", { fg = colors.pink })
@@ -247,8 +247,8 @@ hi("NavicIconsField", { fg = colors.lavender })
 hi("NavicIconsProperty", { fg = colors.lavender })
 
 -- Telescope symbol kinds
-hi("TelescopeResultsFunction", { fg = colors.light_purple })
-hi("TelescopeResultsMethod", { fg = colors.light_purple })
+hi("TelescopeResultsFunction", { fg = colors.light_pink })
+hi("TelescopeResultsMethod", { fg = colors.light_pink })
 hi("TelescopeResultsClass", { fg = colors.mint })
 hi("TelescopeResultsStruct", { fg = colors.mint })
 hi("TelescopeResultsConstant", { fg = colors.mint })
@@ -261,7 +261,7 @@ hi("BlinkIndent", { fg = colors.dim_gray })
 hi("BlinkIndentScope", { fg = colors.gray_purple })
 
 -- Dashboard (snacks.nvim)
-hi("SnacksDashboardHeader", { fg = colors.light_purple })
+hi("SnacksDashboardHeader", { fg = colors.light_pink })
 hi("SnacksDashboardKey", { fg = colors.pink, bold = true })
 hi("SnacksDashboardDesc", { fg = colors.white })
 hi("SnacksDashboardIcon", { fg = colors.lavender })
