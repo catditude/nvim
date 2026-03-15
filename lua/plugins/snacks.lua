@@ -58,7 +58,7 @@ return {
                 },
                 { section = "keys", gap = 1, padding = 1 },
                 {
-                    icon = " ",
+                    icon = " ",
                     title = "Git Status",
                     section = "terminal",
                     enabled = function()
