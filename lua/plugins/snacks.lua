@@ -39,6 +39,14 @@ return {
             },
             sections = {
                 { section = "header" },
+                {
+                    text = {
+                        { "󰧒 " .. os.date("%A, %B %d") .. "  ", hl = "SnacksDashboardHeader" },
+                        { " " .. os.date("%I:%M %p"), hl = "SnacksDashboardHeader" },
+                    },
+                    align = "center",
+                    padding = 1,
+                },
                 { section = "keys", gap = 1, padding = 1 },
                 {
                     icon = " ",
