@@ -56,7 +56,7 @@ return {
 			"⠀⠀⠀⠈⠑⠢⠤⠤⠬⠭⠥⠖⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠒⠢⠤⠤⠤⠒⠊⠁⠀⠀⠀⠀⠀⠀",
                 }, "\n"),
                 keys = {
-                    { icon = "󰦛 ", key = "s", desc = "Restore Session", action = ":SessionRestore" },
+                    { icon = "󰦛 ", key = "s", desc = "Restore Session", action = ":AutoSession restore" },
                     { icon = "󰈞 ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
                     { icon = "󰊄 ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
                     { icon = "󰋚 ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
