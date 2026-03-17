@@ -10,6 +10,12 @@ vim.lsp.config('ruff', require('lsp.ruff'))
 vim.lsp.enable('ruff')
 vim.lsp.inlay_hint.enable(true)
 
+vim.diagnostic.config({
+  underline = { severity = { min = vim.diagnostic.severity.ERROR } },
+  signs = true,
+  virtual_text = false,
+})
+
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
 vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
 vim.keymap.set('n', 'gy', vim.lsp.buf.type_definition, { desc = 'Go to type definition' })
