@@ -50,5 +50,9 @@ return {
       desc = "Workspace symbols (global)",
     },
   },
-  opts = {},
+  opts = {
+    defaults = {
+      path_display = { "truncate" },
+    },
+  },
 }
