@@ -21,6 +21,21 @@ return {
       diff_buf_win_enter = function(bufnr, winid)
         -- Show full file content without folding unchanged lines
         vim.wo[winid].foldenable = false
+        -- Give the bottom (new) diff pane more vertical space
+        vim.schedule(function()
+          local diff_wins = {}
+          for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+            if vim.wo[win].diff then
+              table.insert(diff_wins, { win = win, row = vim.api.nvim_win_get_position(win)[1] })
+            end
+          end
+          if #diff_wins >= 2 then
+            table.sort(diff_wins, function(a, b) return a.row < b.row end)
+            local total = vim.api.nvim_win_get_height(diff_wins[1].win)
+              + vim.api.nvim_win_get_height(diff_wins[2].win)
+            vim.api.nvim_win_set_height(diff_wins[1].win, math.floor(total * 0.35))
+          end
+        end)
       end,
       view_opened = function()
         -- Hide the default tabline (shows file paths when diffview creates a new tab)
