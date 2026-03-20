@@ -28,6 +28,19 @@ return {
                 vim.o.laststatus = 3
             end,
         })
+        -- Bind <CR> to restore session on the dashboard buffer.
+        -- Use UpdatePost so the keymap survives dashboard refreshes
+        -- (e.g. the deferred update on line 10 re-runs :keys() and
+        -- overwrites buffer-local mappings set earlier).
+        vim.api.nvim_create_autocmd("User", {
+            pattern = "SnacksDashboardUpdatePost",
+            callback = function()
+                local buf = vim.api.nvim_get_current_buf()
+                if vim.bo[buf].filetype == "snacks_dashboard" then
+                    vim.keymap.set("n", "<CR>", "<cmd>AutoSession restore<CR>", { buffer = buf })
+                end
+            end,
+        })
     end,
     ---@type snacks.Config
     opts = {
@@ -55,28 +68,20 @@ return {
 			"⠀⠀⠳⣄⠀⠀⠀⠹⣿⣿⣿⡿⠛⣠⠾⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠿⠿⠳⣄⠙⠛⠿⠿⠛⠉⠀⠀⣀⠜⠁⠀⠀⠀⠀",
 			"⠀⠀⠀⠈⠑⠢⠤⠤⠬⠭⠥⠖⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠒⠢⠤⠤⠤⠒⠊⠁⠀⠀⠀⠀⠀⠀",
                 }, "\n"),
-                keys = {
-                    { icon = "󰦛 ", key = "s", desc = "Restore Session", action = ":AutoSession restore" },
-                    { icon = "󰈞 ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
-                    { icon = "󰊄 ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
-                    { icon = "󰋚 ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
-                    { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
-                    { icon = " ", key = "q", desc = "Quit", action = ":qa" },
-                },
+                keys = {},
             },
             sections = {
                 { section = "header" },
                 {
                     text = {
                         { "󰧒 " .. os.date("%A, %B %d") .. "  ", hl = "SnacksDashboardHeader" },
-                        { " " .. os.date("%I:%M %p"), hl = "SnacksDashboardHeader" },
+                        { " " .. os.date("%I:%M %p"), hl = "SnacksDashboardHeader" },
                     },
                     align = "center",
                     padding = 1,
                 },
-                { section = "keys", gap = 1, padding = 1 },
                 {
-                    icon = " ",
+                    icon = " ",
                     title = "Git Status",
                     section = "terminal",
                     enabled = function()
