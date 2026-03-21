@@ -122,6 +122,7 @@ Leader is **Space**.
 - **blink.indent** — fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
 - **todo-comments.nvim** — colorized TODO/FIXME/HACK/NOTE highlights with `]t`/`[t` navigation, `:TodoTelescope` search
+- **render-markdown.nvim** — renders markdown inline in the buffer (headings, code blocks, checkboxes, tables, etc.)
 - **mini.icons** — icon provider
 - **auto-session** — auto save/restore sessions per directory
 - **vim-tmux-navigator** — seamless split/pane navigation with tmux
