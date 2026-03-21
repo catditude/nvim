@@ -28,3 +28,10 @@ timer:start(30000, 30000, vim.schedule_wrap(update))
 vim.api.nvim_create_autocmd({ "FocusGained", "BufWritePost" }, {
   callback = update,
 })
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    timer:stop()
+    timer:close()
+  end,
+})

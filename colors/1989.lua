@@ -145,28 +145,20 @@ hi("rubyInterpolation", { fg = colors.light_pink })
 hi("rubyInterpolationDelimiter", { fg = colors.pink })
 
 -- ERB
-hi("erubyDelimiter", {})
 hi("erubyRailsMethod", { fg = colors.mint })
 
 -- HTML
-hi("htmlTag", {})
-hi("htmlEndTag", {})
-hi("htmlTagName", {})
-hi("htmlArg", {})
 hi("htmlSpecialChar", { fg = colors.lavender })
 
 -- JavaScript
 hi("javaScriptFunction", { fg = colors.mint })
 hi("javaScriptRailsFunction", { fg = colors.mint })
-hi("javaScriptBraces", {})
 hi("jsThis", { fg = colors.pink })
 hi("jsBraces", { fg = colors.light_pink })
 hi("jsGlobalObjects", { fg = colors.mint })
 
 -- YAML
 hi("yamlKey", { fg = colors.pink })
-hi("yamlAnchor", {})
-hi("yamlAlias", {})
 hi("yamlDocumentHeader", { fg = colors.light_yellow })
 hi("yamlPlainScalar", { fg = colors.light_blue })
 hi("yamlBlockCollectionItemStart", { fg = colors.pink })
@@ -179,7 +171,6 @@ hi("cssPseudoClassId", { fg = colors.light_yellow })
 hi("cssClassName", { fg = colors.light_yellow })
 hi("cssValueLength", { fg = colors.lavender })
 hi("cssCommonAttr", { fg = colors.mint })
-hi("cssBraces", {})
 
 -- CoffeeScript
 hi("coffeeCurly", { fg = colors.lavender })

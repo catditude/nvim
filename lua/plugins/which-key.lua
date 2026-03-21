@@ -1,7 +1,6 @@
 -- Popup keybinding hints — press <leader> and wait to see available mappings
 return {
   "folke/which-key.nvim",
-  event = "VeryLazy",
   opts = {
     spec = {
       { "<leader>f", group = "find" },

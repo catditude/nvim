@@ -2,10 +2,10 @@
 return {
   "stevearc/oil.nvim",
   dependencies = { "echasnovski/mini.icons" },
-  lazy = false, -- Recommended: don't lazy load (tricky to get right)
-  keys = {
-    { "-", "<cmd>Oil<cr>", desc = "Open parent directory" },
-  },
+  lazy = false,
+  init = function()
+    vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory" })
+  end,
   opts = {
     win_options = {
       signcolumn = "yes:2",
