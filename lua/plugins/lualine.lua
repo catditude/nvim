@@ -1,4 +1,4 @@
--- Statusline showing mode, branch, diagnostics, file info, and cursor position
+-- Statusline showing mode, branch, diagnostics, breadcrumbs, and cursor position
 return {
   "nvim-lualine/lualine.nvim",
   dependencies = { "SmiteshP/nvim-navic" },
@@ -62,7 +62,6 @@ return {
           icon = "",
           color = { fg = "#afafd7" },
         },
-        { "filename", icon = "󰄛", color = { fg = "#F0C4C8" } },
         {
           function() return require("nvim-navic").get_location() end,
           cond = function() return require("nvim-navic").is_available() end,
