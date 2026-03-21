@@ -135,6 +135,7 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 | **rust-analyzer** | Rust | Uses clippy for diagnostics |
 | **basedpyright** | Python | Inlay hints for variable types, return types, argument names, generics |
 | **ruff** | Python | Linting + formatting, hover disabled (basedpyright handles it) |
+| **lua_ls** | Lua | Neovim runtime in workspace library, recognizes `vim` global |
 
 ### Adding a new LSP server
 

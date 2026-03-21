@@ -8,6 +8,8 @@ vim.lsp.config('basedpyright', require('lsp.basedpyright'))
 vim.lsp.enable('basedpyright')
 vim.lsp.config('ruff', require('lsp.ruff'))
 vim.lsp.enable('ruff')
+vim.lsp.config('lua_ls', require('lsp.lua_ls'))
+vim.lsp.enable('lua_ls')
 vim.lsp.inlay_hint.enable(true)
 
 vim.diagnostic.config({
