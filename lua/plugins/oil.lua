@@ -7,6 +7,10 @@ return {
     vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory" })
   end,
   opts = {
+    keymaps = {
+      ["<C-h>"] = false,
+      ["<C-l>"] = false,
+    },
     win_options = {
       signcolumn = "yes:2",
     },
