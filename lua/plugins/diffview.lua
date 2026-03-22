@@ -33,7 +33,7 @@ return {
             table.sort(diff_wins, function(a, b) return a.row < b.row end)
             local total = vim.api.nvim_win_get_height(diff_wins[1].win)
               + vim.api.nvim_win_get_height(diff_wins[2].win)
-            vim.api.nvim_win_set_height(diff_wins[1].win, math.floor(total * 0.35))
+            vim.api.nvim_win_set_height(diff_wins[1].win, math.floor(total * 0.25))
           end
         end)
       end,
