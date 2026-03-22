@@ -258,6 +258,7 @@ hi("SnacksDashboardKey", { fg = colors.pink, bold = true })
 hi("SnacksDashboardDesc", { fg = colors.white })
 hi("SnacksDashboardIcon", { fg = colors.light_pink })
 hi("SnacksDashboardFooter", { fg = colors.mid_gray })
+hi("SnacksDashboardTitle", { fg = colors.light_pink, bold = true })
 
 -- Noice (cmdline + messages)
 hi("NoiceCmdlinePopupBorder", { fg = colors.gray_purple })

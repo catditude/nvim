@@ -71,18 +71,18 @@ return {
                 keys = {},
             },
             sections = {
-                { section = "header" },
                 {
                     text = {
                         { "󰧒 " .. os.date("%A, %B %d") .. "  ", hl = "SnacksDashboardHeader" },
-                        { " " .. os.date("%I:%M %p"), hl = "SnacksDashboardHeader" },
+                        { " " .. os.date("%I:%M %p"), hl = "SnacksDashboardHeader" },
                     },
                     align = "center",
                     padding = 1,
                 },
+                { section = "header" },
                 {
                     icon = " ",
-                    title = "Git Status",
+                    title = " Git Status",
                     section = "terminal",
                     enabled = function()
                     	return Snacks.git.get_root() ~= nil
