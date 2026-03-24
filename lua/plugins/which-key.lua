@@ -6,6 +6,7 @@ return {
       { "<leader>f", group = "find" },
     },
   },
+  event = "VeryLazy",
   keys = {
     {
       "<leader>?",
