@@ -15,6 +15,21 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set({"n", "v"}, "<leader>y", '"+y')
 vim.keymap.set({"n", "v"}, "<leader>p", '"+p')
 
+vim.keymap.set("v", "Y", function()
+  local start_line = vim.fn.line("v")
+  local end_line = vim.fn.line(".")
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+  local path = vim.api.nvim_buf_get_name(0)
+  local loc = start_line == end_line
+    and path .. ":" .. start_line
+    or path .. ":" .. start_line .. "-" .. end_line
+  vim.fn.setreg("+", loc)
+  vim.notify("Copied: " .. loc)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+end, { desc = "Copy file path with line range" })
+
 vim.keymap.set("n", "<S-h>", "<cmd>bprevious<CR>")
 vim.keymap.set("n", "<S-l>", "<cmd>bnext<CR>")
 vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>")
