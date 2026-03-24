@@ -45,6 +45,22 @@ return {
       desc = "Document symbols",
     },
     {
+      "<leader>fo",
+      function()
+        require("telescope.builtin").lsp_document_symbols({
+          symbols = {
+            "File", "Module", "Namespace", "Package", "Class", "Method",
+            "Property", "Field", "Constructor", "Enum", "Interface",
+            "Function", "Constant", "String", "Number", "Boolean",
+            "Array", "Object", "Key", "Null", "EnumMember", "Struct",
+            "Event", "Operator", "TypeParameter",
+          },
+          symbol_highlights = symbol_highlights,
+        })
+      end,
+      desc = "Document outline (no variables)",
+    },
+    {
       "<leader>fS",
       function() require("telescope.builtin").lsp_dynamic_workspace_symbols({ symbol_highlights = symbol_highlights }) end,
       desc = "Workspace symbols (global)",
