@@ -19,7 +19,7 @@ vim.diagnostic.config({
 })
 
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
-vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
+vim.keymap.set('n', 'gr', function() require('telescope.builtin').lsp_references() end, { desc = 'Find references' })
 vim.keymap.set('n', 'gy', vim.lsp.buf.type_definition, { desc = 'Go to type definition' })
 vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, { desc = 'Show diagnostic' })
 vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end, { desc = 'Next diagnostic' })
