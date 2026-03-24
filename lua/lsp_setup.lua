@@ -27,6 +27,8 @@ vim.keymap.set('n', '[d', function() vim.diagnostic.jump({ count = -1 }) end, { 
 vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = 'Code action' })
 vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, { desc = 'Rename symbol' })
 vim.keymap.set('n', '<leader>cf', function() vim.lsp.buf.format({ async = true }) end, { desc = 'Format file' })
+vim.keymap.set('n', '<leader>ci', function() require('telescope.builtin').lsp_incoming_calls() end, { desc = 'Incoming calls' })
+vim.keymap.set('n', '<leader>co', function() require('telescope.builtin').lsp_outgoing_calls() end, { desc = 'Outgoing calls' })
 
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('lsp_on_attach', { clear = true }),
