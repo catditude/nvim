@@ -33,7 +33,13 @@ return {
             table.sort(diff_wins, function(a, b) return a.row < b.row end)
             local total = vim.api.nvim_win_get_height(diff_wins[1].win)
               + vim.api.nvim_win_get_height(diff_wins[2].win)
-            vim.api.nvim_win_set_height(diff_wins[1].win, math.floor(total * 0.25))
+            vim.api.nvim_win_set_height(diff_wins[1].win, math.floor(total * 0.30))
+            -- Disable scrollbind (which syncs topline, not cursor-relative position)
+            -- and rely on cursorbind + scrolloff=999 to keep both panes centered
+            for _, dw in ipairs(diff_wins) do
+              vim.wo[dw.win].scrollbind = false
+              vim.wo[dw.win].scrolloff = 999
+            end
           end
         end)
       end,
