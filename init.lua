@@ -12,7 +12,7 @@ vim.cmd.colorscheme("1989")
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
-vim.keymap.set({"n", "v"}, "<leader>y", '"+y')
+vim.keymap.set({"n", "v"}, "y", '"+y')
 vim.keymap.set({"n", "v"}, "<leader>p", '"+p')
 
 vim.keymap.set("v", "Y", function()

@@ -25,7 +25,7 @@ Leader is **Space**.
 | Key | What it does |
 |-----|-------------|
 | `Esc` | Clear search highlight |
-| `<leader>y` | Yank to system clipboard |
+| `y` | Yank to system clipboard |
 | `<leader>p` | Paste from system clipboard |
 | `<C-h/j/k/l>` | Navigate between nvim splits and tmux panes |
 | `<C-\>` | Previous tmux pane |
