@@ -10,6 +10,17 @@ return {
     keymaps = {
       ["<C-h>"] = false,
       ["<C-l>"] = false,
+      ["Y"] = {
+        desc = "Copy absolute file path to clipboard",
+        callback = function()
+          local entry = require("oil").get_cursor_entry()
+          local dir = require("oil").get_current_dir()
+          if not entry or not dir then return end
+          local full_path = dir .. entry.name
+          vim.fn.setreg("+", full_path)
+          vim.notify(full_path, vim.log.levels.INFO)
+        end,
+      },
     },
     win_options = {
       signcolumn = "yes:2",
