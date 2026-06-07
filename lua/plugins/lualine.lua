@@ -73,7 +73,21 @@ return {
       lualine_z = { "location" },
     },
     tabline = {
-      lualine_a = { { "buffers", icons_enabled = true, mode = 2 } },
+      lualine_a = {
+        {
+          "buffers",
+          icons_enabled = true,
+          mode = 2,
+          fmt = function(name, context)
+            local path = vim.api.nvim_buf_get_name(context.bufnr)
+            local crate = path:match("/crates/([^/]+)/")
+            if crate then
+              return crate .. "/" .. vim.fn.fnamemodify(path, ":t")
+            end
+            return name
+          end,
+        },
+      },
       lualine_z = { "tabs" },
     },
   },

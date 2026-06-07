@@ -68,6 +68,11 @@ for i = 1, 9 do
   vim.keymap.set("n", "<leader>" .. i, "<cmd>LualineBuffersJump " .. i .. "<CR>")
 end
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.rs",
+  callback = function() vim.lsp.buf.format({ async = false }) end,
+})
+
 require("lazy_init")
 require("lsp_setup")
 require("file_watcher")
