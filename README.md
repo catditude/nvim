@@ -113,6 +113,7 @@ Leader is **Space**.
 - **lazygit.nvim** — full lazygit TUI inside nvim (uses delta as diff pager)
 - **which-key.nvim** — keymap hints popup
 - **lualine.nvim** — statusline: mode, branch, dirty indicator (`*`), ahead/behind arrows, diff stats, diagnostics, shortened path, filename, navic breadcrumbs, filetype, position. Tabline shows open buffers (with index + name) and tab pages
+- **aerial.nvim** — code outline sidebar (VSCode-style). Toggle with `<leader>o`, navigate symbols with `{`/`}`. Uses LSP with treesitter fallback
 - **nvim-navic** — LSP breadcrumbs in statusline (e.g. `MyStruct > impl Display > fmt`)
 - **nvim-cmp** — completion from LSP, buffer, and path sources. `<Tab>` to confirm, ghost text preview, keyword length 2
 - **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes
