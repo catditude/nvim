@@ -12,6 +12,10 @@ vim.lsp.config('lua_ls', require('lsp.lua_ls'))
 vim.lsp.enable('lua_ls')
 vim.lsp.config('jsonls', require('lsp.jsonls'))
 vim.lsp.enable('jsonls')
+vim.lsp.config('vtsls', require('lsp.vtsls'))
+vim.lsp.enable('vtsls')
+vim.lsp.config('eslint', require('lsp.eslint'))
+vim.lsp.enable('eslint')
 vim.lsp.inlay_hint.enable(true)
 
 vim.diagnostic.config({

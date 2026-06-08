@@ -137,6 +137,8 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 | **basedpyright** | Python | Inlay hints for variable types, return types, argument names, generics |
 | **ruff** | Python | Linting + formatting, hover disabled (basedpyright handles it) |
 | **lua_ls** | Lua | Neovim runtime in workspace library, recognizes `vim` global |
+| **vtsls** | TypeScript / JavaScript | VSCode tsserver wrapper; inlay hints for params, types, returns. Handles `.ts`/`.tsx`/`.js`/`.jsx` |
+| **eslint** | TypeScript / JavaScript | Lint diagnostics + `--fix` code actions; self-deactivates without an eslint config |
 
 ### Adding a new LSP server
 
