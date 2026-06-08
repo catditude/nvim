@@ -8,6 +8,7 @@ return {
   },
   opts = {
     backends = { "lsp", "treesitter" },
+    filter_kind = false,
     layout = {
       min_width = 30,
       default_direction = "right",
