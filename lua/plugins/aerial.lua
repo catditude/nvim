@@ -9,9 +9,11 @@ return {
   opts = {
     backends = { "lsp", "treesitter" },
     filter_kind = false,
+    show_guides = true,
+    close_on_select = true,
     layout = {
       min_width = 30,
-      default_direction = "right",
+      default_direction = "left",
     },
   },
 }
