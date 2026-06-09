@@ -113,7 +113,7 @@ Leader is **Space**.
 - **lazygit.nvim** — full lazygit TUI inside nvim (uses delta as diff pager)
 - **which-key.nvim** — keymap hints popup
 - **lualine.nvim** — statusline: mode, branch, dirty indicator (`*`), ahead/behind arrows, diff stats, diagnostics, shortened path, filename, navic breadcrumbs, filetype, position. Tabline shows open buffers (with index + name) and tab pages
-- **aerial.nvim** — code outline sidebar (VSCode-style). Toggle with `<leader>o`, navigate symbols with `{`/`}`. Uses LSP with treesitter fallback
+- **aerial.nvim** — code outline sidebar (left panel). Toggle with `<leader>o`, navigate symbols with `{`/`}`. Starts at collapse level 1, closes on selection. Uses LSP with treesitter fallback
 - **nvim-navic** — LSP breadcrumbs in statusline (e.g. `MyStruct > impl Display > fmt`)
 - **nvim-cmp** — completion from LSP, buffer, and path sources. `<Tab>` to confirm, ghost text preview, keyword length 2
 - **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes
@@ -138,6 +138,7 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 | **basedpyright** | Python | Inlay hints for variable types, return types, argument names, generics |
 | **ruff** | Python | Linting + formatting, hover disabled (basedpyright handles it) |
 | **lua_ls** | Lua | Neovim runtime in workspace library, recognizes `vim` global |
+| **jsonls** | JSON | Validation, formatting, schema support (Claude Code settings schema configured) |
 | **vtsls** | TypeScript / JavaScript | VSCode tsserver wrapper; inlay hints for params, types, returns. Handles `.ts`/`.tsx`/`.js`/`.jsx` |
 | **eslint** | TypeScript / JavaScript | Lint diagnostics + `--fix` code actions; self-deactivates without an eslint config |
 
