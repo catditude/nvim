@@ -16,6 +16,8 @@ vim.lsp.config('vtsls', require('lsp.vtsls'))
 vim.lsp.enable('vtsls')
 vim.lsp.config('eslint', require('lsp.eslint'))
 vim.lsp.enable('eslint')
+vim.lsp.config('bashls', require('lsp.bashls'))
+vim.lsp.enable('bashls')
 vim.lsp.inlay_hint.enable(true)
 
 vim.diagnostic.config({

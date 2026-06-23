@@ -118,7 +118,7 @@ Leader is **Space**.
 - **nvim-cmp** — completion from LSP, buffer, and path sources. `<Tab>` to confirm, ghost text preview, keyword length 2
 - **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes
 - **treesitter-context** — sticky scope header (1 line max) showing enclosing function/struct/class
-- **mason.nvim** — LSP/tool installer
+- **mason.nvim** — LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt)
 - **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status
 - **blink.indent** — fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
@@ -141,6 +141,7 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 | **jsonls** | JSON | Validation, formatting, schema support (Claude Code settings schema configured) |
 | **vtsls** | TypeScript / JavaScript | VSCode tsserver wrapper; inlay hints for params, types, returns. Handles `.ts`/`.tsx`/`.js`/`.jsx` |
 | **eslint** | TypeScript / JavaScript | Lint diagnostics + `--fix` code actions; self-deactivates without an eslint config |
+| **bashls** | Bash / sh | Completion + hover; delegates diagnostics to `shellcheck` and formatting to `shfmt` (both installed via Mason) |
 
 ### Adding a new LSP server
 
