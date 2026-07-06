@@ -9,11 +9,15 @@ local cache_dir = vim.fn.resolve(vim.fn.stdpath("cache") .. "/diagram-cache/merm
 vim.fn.mkdir(cache_dir, "p")
 
 ---@param source string  raw mermaid fence content
----@param options table  renderer options (expects options.kroki_url)
+---@param options table  renderer options (expects options.kroki_url, options.theme)
 ---@return table|nil
 M.render = function(source, options)
   local kroki_url = (options and options.kroki_url) or "http://localhost:8000"
-  local hash = vim.fn.sha256(M.id .. ":" .. kroki_url .. ":" .. source)
+  -- mermaid theme (default/dark/forest/neutral). "dark" gives light edge labels
+  -- that are readable on a dark terminal background.
+  local theme = (options and options.theme) or "dark"
+  -- theme is part of the cache key so switching it invalidates stale PNGs
+  local hash = vim.fn.sha256(M.id .. ":" .. kroki_url .. ":" .. theme .. ":" .. source)
   local path = vim.fn.resolve(cache_dir .. "/" .. hash .. ".png")
   if vim.fn.filereadable(path) == 1 then return { file_path = path } end
 
@@ -31,6 +35,7 @@ M.render = function(source, options)
   local tmppath = path .. ".new.png"
   local cmd = {
     "curl", "-sf", "-X", "POST",
+    "-H", "Kroki-Diagram-Options-Theme: " .. theme,
     kroki_url .. "/mermaid/png",
     "--data-binary", "@" .. tmpsource,
     "-o", tmppath,
