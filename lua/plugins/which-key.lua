@@ -4,6 +4,8 @@ return {
   opts = {
     spec = {
       { "<leader>f", group = "find" },
+      { "<leader>g", group = "git / review" },
+      { "<leader>h", group = "hunks" },
     },
   },
   event = "VeryLazy",

@@ -3,8 +3,17 @@ return {
   "sindrets/diffview.nvim",
   cmd = { "DiffviewOpen", "DiffviewFileHistory" },
   keys = {
+    -- No rev given, so this is index-relative: uncommitted work only.
+    -- (--imply-local is inert without a range rev, but harmless.)
     { "<leader>gd", "<cmd>DiffviewOpen --imply-local<cr>", desc = "Diff view (working tree)" },
     { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history" },
+
+    -- Review: upstream...HEAD, i.e. what a CR would show. See lua/review.lua.
+    { "<leader>gc", function() require("review").review_pick() end, desc = "Review CR (all packages, or pick one)" },
+    { "<leader>gq", function() require("review").changed_to_quickfix() end, desc = "Changed files to quickfix (all pkgs)" },
+    { "<leader>gb", function() require("review").toggle_base() end, desc = "Toggle gitsigns base (index / upstream)" },
+    { "<leader>gf", function() require("review").find_changed() end, desc = "Find in changed files (all pkgs)" },
+    { "<leader>gg", function() require("review").grep_changed() end, desc = "Grep changed files (all pkgs)" },
   },
   opts = {
     enhanced_diff_hl = true,
@@ -21,7 +30,7 @@ return {
       diff_buf_win_enter = function(bufnr, winid)
         -- Show full file content without folding unchanged lines
         vim.wo[winid].foldenable = false
-        -- Give the bottom (new) diff pane more vertical space
+        -- Split the two diff panes unevenly, favouring the bottom (new) side
         vim.schedule(function()
           local diff_wins = {}
           for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
@@ -33,7 +42,10 @@ return {
             table.sort(diff_wins, function(a, b) return a.row < b.row end)
             local total = vim.api.nvim_win_get_height(diff_wins[1].win)
               + vim.api.nvim_win_get_height(diff_wins[2].win)
-            vim.api.nvim_win_set_height(diff_wins[1].win, math.floor(total * 0.30))
+            -- Fraction of the vertical space given to the top (old/base) pane.
+            -- Renders a few points lower than set: winbar rows are not part of
+            -- the window height being divided.
+            vim.api.nvim_win_set_height(diff_wins[1].win, math.floor(total * 0.40))
             -- Disable scrollbind (which syncs topline, not cursor-relative position)
             -- and rely on cursorbind + scrolloff=999 to keep both panes centered
             for _, dw in ipairs(diff_wins) do

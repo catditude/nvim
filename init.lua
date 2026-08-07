@@ -30,6 +30,11 @@ vim.keymap.set("v", "Y", function()
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
 end, { desc = "Copy file path with line range" })
 
+-- Quickfix walking: the cross-repo review list lands here (<leader>gq).
+-- silent! swallows the error at either end of the list.
+vim.keymap.set("n", "]q", "<cmd>silent! cnext<CR>zz", { desc = "Next quickfix" })
+vim.keymap.set("n", "[q", "<cmd>silent! cprevious<CR>zz", { desc = "Previous quickfix" })
+
 vim.keymap.set("n", "<S-h>", "<cmd>bprevious<CR>")
 vim.keymap.set("n", "<S-l>", "<cmd>bnext<CR>")
 vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>")
@@ -73,6 +78,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   callback = function() vim.lsp.buf.format({ async = false }) end,
 })
 
+require("filetypes")
 require("lazy_init")
 require("lsp_setup")
 require("file_watcher")
