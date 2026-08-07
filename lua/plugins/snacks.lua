@@ -44,6 +44,13 @@ return {
     end,
     ---@type snacks.Config
     opts = {
+        -- Back vim.ui.select with the snacks picker (a proper float). The built-in
+        -- select renders as a numbered inputlist through the message area, which
+        -- noice then reformats into a ragged, indented list; this replaces it and
+        -- fixes every vim.ui.select site (review picker, LSP code actions, etc.).
+        -- ui_select is registered eagerly in init below; picker.enabled alone only
+        -- wires it lazily on first picker use.
+        picker = { enabled = true, ui_select = true },
         dashboard = {
             preset = {
                 header = table.concat({
