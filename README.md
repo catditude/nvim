@@ -78,9 +78,45 @@ Leader is **Space**.
 | Key | What it does |
 |-----|-------------|
 | `<leader>lg` | Open lazygit |
-| `<leader>gd` | Diffview (working tree) |
+| `<leader>gd` | Diffview (working tree, vs index) |
 | `<leader>gh` | File history (current file) |
 | `q` | Close diffview |
+
+### Code review (`lua/review.lua`)
+
+For reviewing committed work (an agent's output, a CR) rather than unstaged edits.
+Baseline is `<base>...HEAD`, i.e. what a CR shows, not the index.
+
+Multi-repo aware: in a Brazil workspace each package under `src/` is its own repo
+on its own branch, and the workspace root is not a repo at all.
+
+**Base resolution** (per package, in order): the branch's own `@{upstream}` if set,
+else `origin/<target>` if that ref exists, else `origin/HEAD`. The target defaults to
+`release-3.x`; override per session with `:lua vim.g.review_target = "mainline"`. The
+configured target is tried before `origin/HEAD` because feature branches often have no
+upstream and `origin/HEAD` tends to point at mainline or a Yocto version branch
+(scarthgap), not the release branch a CR actually targets.
+
+| Key | What it does |
+|-----|-------------|
+| `<leader>gc` | Review CR: `<CR>` opens all changed packages, or pick one |
+| `<leader>gq` | Changed files across all packages to quickfix |
+| `<leader>gb` | Toggle gitsigns base: index / per-repo fork point |
+| `<leader>gf` | Find files, scoped to changed files (all packages) |
+| `<leader>gg` | Live grep, scoped to changed files (all packages) |
+| `]q` / `[q` | Next / prev quickfix entry |
+
+`<leader>gc` lists changed packages with "All packages" first, so `<CR>` reviews the
+whole CR; each package opens in its own tabpage (`gt` / `gT` to switch). With one
+changed package it skips the menu. It works from any buffer, including the dashboard,
+because it scans the workspace rather than the current buffer's repo. `--imply-local`
+keeps LSP, diagnostics and `gd`/`gr` working on the HEAD side.
+
+`<leader>gb` caveat: files **added** on the branch show no gutter signs. Gitsigns diffs
+a buffer against a version of that same file, and with no blob at the base revision it
+falls back to the buffer's own content (empty diff, not "all added"). Diffview diffs
+trees, so the `<leader>gc` diffview lists added and deleted files correctly and is the
+authoritative view; treat `<leader>gb` as a reading aid for modified files.
 
 ### Buffers
 
@@ -166,7 +202,19 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 Polls open files every 1 second with `vim.uv.new_fs_poll()` and runs `checktime` when changes are detected. Useful when external tools (formatters, git operations) modify files outside nvim.
 
 ### Git ahead/behind (`lua/git_ahead_behind.lua`)
-Periodically queries `git rev-list --left-right --count HEAD...@{upstream}` to populate `vim.g._git_ahead` and `vim.g._git_behind` for the lualine statusline. Refreshes every 30 seconds, on focus gain, and after buffer writes.
+Periodically queries `git rev-list --left-right --count HEAD...@{upstream}` to populate `vim.g._git_ahead` and `vim.g._git_behind` for the lualine statusline. Refreshes every 30 seconds, on focus gain, after buffer writes, and on `BufEnter`.
+
+The repo is resolved from the current buffer (via `review.repo_root()`), not from nvim's cwd. In a multi-repo workspace the cwd is often not a git repo at all, and even when it is, it's the wrong repo for the buffer you're looking at.
+
+### Code review (`lua/review.lua`)
+Review helpers for workspaces holding several git repos (Brazil: one repo per package under `src/`, workspace root not a repo).
+
+Key ideas:
+- **Baseline is `upstream...HEAD`, not the index.** Committed work is invisible to index-relative tooling, which is most of it by default.
+- **Repos resolve per buffer.** `repo_root()` uses `vim.fs.root` (no subprocess, runs on every `BufEnter`); `workspace_repos()` anchors on `.brazil` rather than searching upward for `src`, because packages commonly contain their own `src/`.
+- **Gitsigns' base is applied per buffer, not globally.** Git objects are repo-scoped, so a merge-base SHA from one package is unresolvable in another and gitsigns would silently show no signs. Applied via gitsigns' `on_attach`, deferred with `vim.schedule` since the buffer's cache entry doesn't exist yet at attach time.
+- **`merge_base()` exists separately from `review_range()`.** `git diff` accepts `A...B`; `git show <rev>:<path>` (how gitsigns fetches its reference) rejects a range outright, so it needs the single fork-point SHA.
+- **Submodule gitlinks are filtered from file lists.** `git diff --name-only` reports submodule pointer bumps as changed paths, but they're directories, not openable files.
 
 ### 1989 colorscheme (`colors/1989.lua`)
 Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, indent guides (blink.indent), dashboard (snacks.nvim), noice.nvim cmdline, and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
