@@ -69,6 +69,8 @@ return {
   opts = {
     defaults = {
       path_display = { "truncate" },
+      -- Directory excludes (Brazil env/build, node_modules, python site-packages, etc.) are NOT
+      -- set here: they live in ~/workplace/.ignore, which both rg (grep) and fd (find_files) read.
     },
   },
 }

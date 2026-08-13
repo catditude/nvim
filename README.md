@@ -43,6 +43,8 @@ Leader is **Space**.
 | `<leader>fs` | Document symbols |
 | `<leader>fS` | Workspace symbols (global) |
 
+**Excluded dirs:** find-files and live-grep skip Brazil/CDK build noise and Python deps (`env/`, `build/`, `release-info/`, `dist/`, `cdk.out/`, `node_modules/`, `site-packages/`, versioned `X.Y.Z/lib/` installs). These are dir-name patterns, so they match at any depth: a source dir literally named `build`/`env`/`dist` would also be skipped. This is not Telescope config: the excludes live in `~/workplace/.ignore`, which both `rg` (grep) and `fd` (find-files) read. Brazil workspace roots are not git repos, so grep there has no `.gitignore` to obey, but `rg`/`fd` walk up to a parent `.ignore` regardless of git boundaries, so one file at the workspace container covers every package. To add or change an exclude, edit that file (gitignore syntax; use a leading `**/` for patterns with a mid-path `/`).
+
 ### LSP
 
 | Key | What it does |
