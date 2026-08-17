@@ -162,6 +162,28 @@ function M.changed_files(root)
   return files
 end
 
+--- Files with uncommitted changes in a repo (staged + unstaged vs HEAD, minus
+--- deletions) plus untracked files, as absolute readable paths. Deletions are
+--- dropped (nothing to open); untracked files are kept (they're part of the
+--- uncommitted work, and git diff won't report them).
+--- @param root string
+--- @return string[]
+function M.worktree_files(root)
+  local files = {}
+  for _, out in ipairs({
+    (git(root, { "diff", "--name-only", "--diff-filter=d", "HEAD" }) or ""),
+    (git(root, { "ls-files", "--others", "--exclude-standard" }) or ""),
+  }) do
+    if out ~= "" then
+      for _, rel in ipairs(vim.split(out, "\n", { trimempty = true })) do
+        local abs = root .. "/" .. rel
+        if vim.fn.filereadable(abs) == 1 then table.insert(files, abs) end
+      end
+    end
+  end
+  return files
+end
+
 --- Per-repo change stats for the review range. Repos with no changes are omitted.
 --- @return table[] { root, name, files, insertions, deletions }
 function M.workspace_summary()
@@ -184,6 +206,29 @@ function M.workspace_summary()
   return result
 end
 
+--- Per-repo stats for uncommitted work (staged + unstaged vs HEAD). Repos with no
+--- changes are omitted. Untracked files count toward inclusion (git diff doesn't
+--- report them), so a package with only new files still appears, matching what a
+--- no-rev DiffviewOpen lists.
+--- @return table[] { root, name, files, insertions, deletions }
+function M.worktree_summary()
+  local result = {}
+  for _, root in ipairs(M.workspace_repos()) do
+    local stat = git(root, { "diff", "--shortstat", "HEAD" })
+    local untracked = git(root, { "ls-files", "--others", "--exclude-standard" })
+    if (stat and stat ~= "") or (untracked and untracked ~= "") then
+      table.insert(result, {
+        root = root,
+        name = vim.fs.basename(root),
+        files = tonumber(stat and stat:match("(%d+) files? changed") or "") or 0,
+        insertions = tonumber(stat and stat:match("(%d+) insertions?") or "") or 0,
+        deletions = tonumber(stat and stat:match("(%d+) deletions?") or "") or 0,
+      })
+    end
+  end
+  return result
+end
+
 --- Open a Diffview for a repo's review range.
 --- --imply-local points the HEAD side at real files on disk so LSP, diagnostics
 --- and gd/gr keep working during review. Without it both sides are git blobs.
@@ -194,28 +239,36 @@ function M.open_diff(root)
     vim.notify(err, vim.log.levels.WARN)
     return
   end
+  require("diff_layout").apply()
   vim.cmd(("DiffviewOpen -C%s %s --imply-local"):format(vim.fn.fnameescape(root), range))
 end
 
---- Open a Diffview per package, each in its own tabpage.
---- @param pkgs table[]
-local function open_all(pkgs)
-  for _, p in ipairs(pkgs) do
-    if p.root ~= "*" then M.open_diff(p.root) end
-  end
+--- Open a Diffview of a repo's uncommitted work. No rev, so it matches <leader>gd:
+--- the file panel splits into unstaged "Changes" and "Staged changes", and hunks
+--- can be staged in place.
+--- @param root string
+function M.worktree_open(root)
+  require("diff_layout").apply()
+  vim.cmd(("DiffviewOpen -C%s --imply-local"):format(vim.fn.fnameescape(root)))
 end
 
---- Pick a package to review from all changed packages in the workspace.
---- "All packages" is first so <CR> reviews the whole CR, which is the common case;
---- each Diffview lives in its own tabpage, so opening several is fine.
-function M.review_pick()
-  local pkgs = M.workspace_summary()
+--- Package picker shared by the review (upstream...HEAD) and uncommitted flows.
+--- `summary` returns the changed-package list; `open_one(root)` opens one package.
+--- "All packages" is first so <CR> covers everything (the common case); each
+--- Diffview lives in its own tabpage, so opening several is fine. One changed
+--- package skips the menu.
+--- @param summary fun(): table[]
+--- @param open_one fun(root: string)
+--- @param prompt string
+--- @param empty_msg string
+local function pick(summary, open_one, prompt, empty_msg)
+  local pkgs = summary()
   if #pkgs == 0 then
-    vim.notify("no packages with changes vs upstream", vim.log.levels.INFO)
+    vim.notify(empty_msg, vim.log.levels.INFO)
     return
   end
   if #pkgs == 1 then
-    M.open_diff(pkgs[1].root)
+    open_one(pkgs[1].root)
     return
   end
 
@@ -228,69 +281,108 @@ function M.review_pick()
   vim.list_extend(items, pkgs)
 
   vim.ui.select(items, {
-    prompt = "Review package:",
+    prompt = prompt,
     format_item = function(p)
       local label = p.root == "*" and ("All %d packages"):format(#pkgs) or p.name
       return ("%-36s %2d files  +%d/-%d"):format(label, p.files, p.insertions, p.deletions)
     end,
   }, function(choice)
     if not choice then return end
-    if choice.root == "*" then open_all(pkgs) else M.open_diff(choice.root) end
+    if choice.root == "*" then
+      for _, p in ipairs(pkgs) do
+        if p.root ~= "*" then open_one(p.root) end
+      end
+    else
+      open_one(choice.root)
+    end
   end)
 end
 
---- Quickfix list of every changed file across every package. Gives one linear
---- walk (]q / [q) over the whole review surface. Diffview has no multi-repo view.
-function M.changed_to_quickfix()
+--- Pick a package to review (upstream...HEAD) from all changed packages.
+function M.review_pick()
+  pick(M.workspace_summary, M.open_diff, "Review package:", "no packages with changes vs upstream")
+end
+
+--- Like review_pick, but for uncommitted work (staged + unstaged vs HEAD), the
+--- multi-package version of <leader>gd.
+function M.worktree_pick()
+  pick(M.worktree_summary, M.worktree_open, "Uncommitted package:", "no packages with uncommitted changes")
+end
+
+--- Quickfix list of every file from `files_fn` across every package. Gives one
+--- linear walk (]q / [q) over the whole surface. Diffview has no multi-repo view.
+--- @param files_fn fun(root: string): string[]
+--- @param title string
+--- @param empty_msg string
+local function to_quickfix(files_fn, title, empty_msg)
   local items = {}
   for _, root in ipairs(M.workspace_repos()) do
-    for _, file in ipairs(M.changed_files(root)) do
+    for _, file in ipairs(files_fn(root)) do
       table.insert(items, { filename = file, lnum = 1, col = 1, text = vim.fs.basename(root) })
     end
   end
   if #items == 0 then
-    vim.notify("no changed files vs upstream", vim.log.levels.INFO)
+    vim.notify(empty_msg, vim.log.levels.INFO)
     return
   end
-  vim.fn.setqflist({}, " ", { title = "Review: changed files", items = items })
+  vim.fn.setqflist({}, " ", { title = title, items = items })
   vim.cmd("copen")
 end
 
---- All changed files across the workspace, for Telescope scoping.
+--- Every file from `files_fn` across the workspace, flattened, for Telescope scoping.
+--- @param files_fn fun(root: string): string[]
 --- @return string[]
-function M.all_changed_files()
+local function collect(files_fn)
   local files = {}
   for _, root in ipairs(M.workspace_repos()) do
-    vim.list_extend(files, M.changed_files(root))
+    vim.list_extend(files, files_fn(root))
   end
   return files
 end
 
---- Telescope find_files over only the CR-changed files.
-function M.find_changed()
-  local files = M.all_changed_files()
+--- Telescope `builtin` scoped to the files from `files_fn`. find_files treats each
+--- path as its own search root; live_grep restricts the grep to them.
+--- @param builtin string
+--- @param files_fn fun(root: string): string[]
+--- @param title string
+--- @param empty_msg string
+local function telescope_over(builtin, files_fn, title, empty_msg)
+  local files = collect(files_fn)
   if #files == 0 then
-    vim.notify("no changed files vs upstream", vim.log.levels.INFO)
+    vim.notify(empty_msg, vim.log.levels.INFO)
     return
   end
-  require("telescope.builtin").find_files({
-    prompt_title = "Changed files (review)",
-    -- `find` over an explicit file list: each path is its own search root.
+  require("telescope.builtin")[builtin]({
+    prompt_title = title,
     search_dirs = files,
   })
 end
 
---- Telescope live_grep restricted to the CR-changed files.
+-- Review (upstream...HEAD) and uncommitted (vs HEAD) variants of the file-scoped
+-- helpers. Each pair differs only in which per-repo file lister it passes.
+
+function M.changed_to_quickfix()
+  to_quickfix(M.changed_files, "Review: changed files", "no changed files vs upstream")
+end
+
+function M.worktree_to_quickfix()
+  to_quickfix(M.worktree_files, "Uncommitted: changed files", "no uncommitted changed files")
+end
+
+function M.find_changed()
+  telescope_over("find_files", M.changed_files, "Changed files (review)", "no changed files vs upstream")
+end
+
+function M.worktree_find()
+  telescope_over("find_files", M.worktree_files, "Uncommitted files", "no uncommitted changed files")
+end
+
 function M.grep_changed()
-  local files = M.all_changed_files()
-  if #files == 0 then
-    vim.notify("no changed files vs upstream", vim.log.levels.INFO)
-    return
-  end
-  require("telescope.builtin").live_grep({
-    prompt_title = "Grep changed files (review)",
-    search_dirs = files,
-  })
+  telescope_over("live_grep", M.changed_files, "Grep changed files (review)", "no changed files vs upstream")
+end
+
+function M.worktree_grep()
+  telescope_over("live_grep", M.worktree_files, "Grep uncommitted files", "no uncommitted changed files")
 end
 
 -- "Review mode": gitsigns' gutter shows the review diff instead of unstaged work.

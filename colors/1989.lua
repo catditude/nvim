@@ -33,9 +33,9 @@ local colors = {
   dark_green = "#00875f",
   orange = "#FFC067",
   -- Diff backgrounds
-  diff_add = "#2a3a2a",
-  diff_delete = "#3a2a2a",
-  diff_change = "#2a2a3a",
+  diff_add = "#1e3a1e",
+  diff_delete = "#3a1e1e",
+  diff_change = "#1e1e3a",
   diff_text = "#2a5a2a",
   diff_delete_strong = "#6b2a2a",
   diff_change_strong = "#2a2a5a",
@@ -83,7 +83,7 @@ hi("Define", { fg = colors.gray_purple })
 hi("DiffAdd", { bg = colors.diff_add })
 hi("DiffDelete", { bg = colors.diff_delete })
 hi("DiffChange", { bg = colors.diff_change })
-hi("DiffText", { bg = colors.diff_text, bold = true })
+hi("DiffText", { bg = colors.diff_change_strong, bold = true })
 hi("ErrorMsg", { fg = colors.white, bg = colors.dark_pink })
 hi("WarningMsg", { fg = colors.white, bg = colors.dark_pink })
 

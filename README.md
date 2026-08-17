@@ -80,9 +80,18 @@ Leader is **Space**.
 | Key | What it does |
 |-----|-------------|
 | `<leader>lg` | Open lazygit |
-| `<leader>gd` | Diffview (working tree, vs index) |
+| `<leader>gd` | Diffview: uncommitted work (staged + unstaged), current repo |
+| `<leader>gu` | Diffview: uncommitted work, all packages (pick one or all) |
+| `<leader>gQ` | Uncommitted changed files across all packages to quickfix |
+| `<leader>gF` | Find files, scoped to uncommitted files (all packages) |
+| `<leader>gG` | Live grep, scoped to uncommitted files (all packages) |
 | `<leader>gh` | File history (current file) |
 | `q` | Close diffview |
+
+The uncommitted family (`gu`/`gQ`/`gF`/`gG`) are the working-tree twins of the committed
+review commands (`gc`/`gq`/`gf`/`gg`): same `lua/review.lua` multi-package machinery
+("All packages" first, one tabpage per package), diffed vs HEAD (untracked files
+included) instead of `upstream...HEAD`. Capital letter = uncommitted.
 
 ### Code review (`lua/review.lua`)
 
@@ -147,7 +156,7 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 - **telescope.nvim** — fuzzy finder with fzf-native sorter
 - **flash.nvim** — jump anywhere with `s`, pink highlight labels
 - **gitsigns.nvim** — gutter signs, inline hunk previews, staging, blame, word diff
-- **diffview.nvim** — side-by-side diffs with tree file panel, treesitter highlighting in diff buffers, full file content (no folding)
+- **diffview.nvim** — adaptive diff layout via `lua/diff_layout.lua`: side-by-side when the window is wide (`>= 210` cols, e.g. a zoomed pane), else stacked (top/bottom). Re-evaluated on each open. Tree file panel (30 cols), treesitter highlighting in diff buffers, full file content (no folding). `<leader>b` toggles the file panel to reclaim width in a narrow pane
 - **lazygit.nvim** — full lazygit TUI inside nvim (uses delta as diff pager)
 - **which-key.nvim** — keymap hints popup
 - **lualine.nvim** — statusline: mode, branch, dirty indicator (`*`), ahead/behind arrows, diff stats, diagnostics, shortened path, filename, navic breadcrumbs, filetype, position. Tabline shows open buffers (with index + name) and tab pages
