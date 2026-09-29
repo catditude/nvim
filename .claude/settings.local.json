@@ -13,6 +13,6 @@
       "Bash(gh api:*)"
     ]
   },
-  "outputStyle": "Explanatory",
+  "outputStyle": "Concise",
   "prefersReducedMotion": true
 }
