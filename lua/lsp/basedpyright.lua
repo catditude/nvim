@@ -12,8 +12,17 @@ return {
     '.git',
   },
   settings = {
+    -- Resolve the interpreter from a project-local .venv (relative to the LSP
+    -- root dir). Standard layout for Peru python packages (e.g. ARSensing*).
+    python = {
+      pythonPath = '.venv/bin/python',
+    },
     basedpyright = {
       analysis = {
+        -- basedpyright defaults to 'recommended' (stricter than pyright strict);
+        -- 'standard' matches plain pyright and avoids drowning projects that
+        -- gate on mypy/ruff/pylint in reportAny/reportExplicitAny noise.
+        typeCheckingMode = 'standard',
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
         diagnosticMode = 'openFilesOnly',

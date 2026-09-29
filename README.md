@@ -182,8 +182,8 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 | Server | Language | Notes |
 |--------|----------|-------|
 | **rust-analyzer** | Rust | Uses clippy for diagnostics |
-| **basedpyright** | Python | Inlay hints for variable types, return types, argument names, generics |
-| **ruff** | Python | Linting + formatting, hover disabled (basedpyright handles it) |
+| **basedpyright** | Python | Inlay hints for variable types, return types, argument names, generics. `typeCheckingMode = 'standard'`, interpreter from root `.venv/bin/python` |
+| **ruff** | Python | Linting + formatting, hover disabled (basedpyright handles it). Uses root `.venv/bin/ruff` if present, else PATH (`:echo g:ruff_lsp_bin`) |
 | **lua_ls** | Lua | Neovim runtime in workspace library, recognizes `vim` global |
 | **jsonls** | JSON | Validation, formatting, schema support (Claude Code settings schema configured) |
 | **vtsls** | TypeScript / JavaScript | VSCode tsserver wrapper; inlay hints for params, types, returns. Handles `.ts`/`.tsx`/`.js`/`.jsx` |
