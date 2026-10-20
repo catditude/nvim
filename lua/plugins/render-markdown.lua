@@ -2,5 +2,12 @@ return {
   'MeanderingProgrammer/render-markdown.nvim',
   ft = { 'markdown' },
   dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' },
-  opts = {},
+  opts = {
+    heading = { sign = false, width = 'block', right_pad = 1, border = true },
+    code = { sign = false, width = 'block', right_pad = 2, border = 'thin' },
+    pipe_table = { preset = 'round', cell = 'trimmed' },
+    -- Keep the cursor line rendered. Disabling anti_conceal also sets concealcursor,
+    -- so treesitter conceals (**, `, link URLs) stay hidden on the cursor line too.
+    anti_conceal = { enabled = false },
+  },
 }

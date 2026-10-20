@@ -10,6 +10,7 @@ return {
           "bash-language-server",
           "shellcheck", -- bashls delegates diagnostics here
           "shfmt",      -- bashls delegates formatting here
+          "marksman",
         },
         run_on_start = true,
         start_delay = 3000,

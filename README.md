@@ -13,6 +13,7 @@ lua/lsp_setup.lua       → LSP servers, keymaps, document highlight, inlay hint
 lua/file_watcher.lua    → Auto-reload buffers on external file changes (libuv polling)
 lua/plugins/*.lua       → One file per plugin
 lua/lsp/*.lua           → LSP server configs (native 0.11 format)
+ftplugin/markdown.lua   → Markdown buffer options (wrap, linebreak, breakindent, no relative numbers)
 colors/1989.lua         → Colorscheme
 ```
 
@@ -40,7 +41,7 @@ Leader is **Space**.
 | `<leader>fh` | Help tags |
 | `<leader>fk` | Keymaps |
 | `<leader>fd` | Diagnostics |
-| `<leader>fs` | Document symbols |
+| `<leader>fs` | Document symbols (markdown: headings, via marksman) |
 | `<leader>fS` | Workspace symbols (global) |
 
 **Excluded dirs:** find-files and live-grep skip Brazil/CDK build noise and Python deps (`env/`, `build/`, `release-info/`, `dist/`, `cdk.out/`, `node_modules/`, `site-packages/`, versioned `X.Y.Z/lib/` installs). These are dir-name patterns, so they match at any depth: a source dir literally named `build`/`env`/`dist` would also be skipped. This is not Telescope config: the excludes live in `~/workplace/.ignore`, which both `rg` (grep) and `fd` (find-files) read. Brazil workspace roots are not git repos, so grep there has no `.gitignore` to obey, but `rg`/`fd` walk up to a parent `.ignore` regardless of git boundaries, so one file at the workspace container covers every package. To add or change an exclude, edit that file (gitignore syntax; use a leading `**/` for patterns with a mid-path `/`).
@@ -149,6 +150,7 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 | `s` | Flash jump |
 | `]t` / `[t` | Next / prev todo comment |
 | `<leader>?` | Which-key (buffer keymaps) |
+| `<leader>uw` | Toggle line wrap |
 
 ## Plugins
 
@@ -160,17 +162,17 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 - **lazygit.nvim** — full lazygit TUI inside nvim (uses delta as diff pager)
 - **which-key.nvim** — keymap hints popup
 - **lualine.nvim** — statusline: mode, branch, dirty indicator (`*`), ahead/behind arrows, diff stats, diagnostics, shortened path, filename, navic breadcrumbs, filetype, position. Tabline shows open buffers (with index + name) and tab pages
-- **aerial.nvim** — code outline sidebar (left panel). Toggle with `<leader>o`, navigate symbols with `{`/`}`. Starts at collapse level 1, closes on selection. Uses LSP with treesitter fallback
+- **aerial.nvim** — code outline sidebar (left panel). Toggle with `<leader>o`, navigate symbols with `{`/`}`. Starts at collapse level 1 (markdown: fully expanded heading tree), closes on selection. Uses LSP with treesitter fallback
 - **nvim-navic** — LSP breadcrumbs in statusline (e.g. `MyStruct > impl Display > fmt`)
 - **nvim-cmp** — completion from LSP, buffer, and path sources. `<Tab>` to confirm, ghost text preview, keyword length 2
 - **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes
 - **treesitter-context** — sticky scope header (1 line max) showing enclosing function/struct/class
-- **mason.nvim** — LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt)
+- **mason.nvim** — LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt, marksman)
 - **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status
 - **blink.indent** — fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
 - **todo-comments.nvim** — colorized TODO/FIXME/HACK/NOTE highlights with `]t`/`[t` navigation, `:TodoTelescope` search
-- **render-markdown.nvim** — renders markdown inline in the buffer (headings, code blocks, checkboxes, tables, etc.)
+- **render-markdown.nvim** — renders markdown inline in the buffer (headings, code blocks, checkboxes, tables, etc.). Headings and code blocks sized to their content (`width = 'block'`), heading border bars, thin code fences, no sign-column icons, rounded tables with `cell = 'trimmed'` (cells can't wrap). Rendering turns off while the window is scrolled sideways (plugin only renders at `leftcol == 0`). Cursor line stays rendered (anti-conceal off); insert mode shows raw text
 - **mini.icons** — icon provider
 - **auto-session** — auto save/restore sessions per directory
 - **vim-tmux-navigator** — seamless split/pane navigation with tmux
@@ -189,6 +191,7 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 | **vtsls** | TypeScript / JavaScript | VSCode tsserver wrapper; inlay hints for params, types, returns. Handles `.ts`/`.tsx`/`.js`/`.jsx` |
 | **eslint** | TypeScript / JavaScript | Lint diagnostics + `--fix` code actions; self-deactivates without an eslint config |
 | **bashls** | Bash / sh | Completion + hover; delegates diagnostics to `shellcheck` and formatting to `shfmt` (both installed via Mason) |
+| **marksman** | Markdown | Go to definition on `[x](file.md#heading)` links, path/heading completion, broken-link diagnostics |
 
 ### Adding a new LSP server
 
@@ -228,7 +231,7 @@ Key ideas:
 - **Submodule gitlinks are filtered from file lists.** `git diff --name-only` reports submodule pointer bumps as changed paths, but they're directories, not openable files.
 
 ### 1989 colorscheme (`colors/1989.lua`)
-Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, indent guides (blink.indent), dashboard (snacks.nvim), noice.nvim cmdline, and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
+Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, indent guides (blink.indent), dashboard (snacks.nvim), noice.nvim cmdline, render-markdown (heading tints, dark code background), treesitter `@markup.*` (markdown, vimdoc), and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
 
 ## Settings
 

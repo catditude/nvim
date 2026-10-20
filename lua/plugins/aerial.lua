@@ -12,7 +12,11 @@ return {
     show_guides = true,
     close_on_select = true,
     on_first_symbols = function(bufnr)
-      require("aerial").tree_set_collapse_level(bufnr, 1)
+      if vim.bo[bufnr].filetype == "markdown" then
+        require("aerial").tree_set_collapse_level(bufnr, 99)
+      else
+        require("aerial").tree_set_collapse_level(bufnr, 1)
+      end
     end,
     layout = {
       min_width = 30,

@@ -18,6 +18,8 @@ vim.lsp.config('eslint', require('lsp.eslint'))
 vim.lsp.enable('eslint')
 vim.lsp.config('bashls', require('lsp.bashls'))
 vim.lsp.enable('bashls')
+vim.lsp.config('marksman', require('lsp.marksman'))
+vim.lsp.enable('marksman')
 vim.lsp.inlay_hint.enable(true)
 
 vim.diagnostic.config({

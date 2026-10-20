@@ -35,6 +35,11 @@ end, { desc = "Copy file path with line range" })
 vim.keymap.set("n", "]q", "<cmd>silent! cnext<CR>zz", { desc = "Next quickfix" })
 vim.keymap.set("n", "[q", "<cmd>silent! cprevious<CR>zz", { desc = "Previous quickfix" })
 
+vim.keymap.set("n", "<leader>uw", function()
+  vim.opt_local.wrap = not vim.opt_local.wrap:get()
+  vim.notify("wrap " .. (vim.opt_local.wrap:get() and "on" or "off"))
+end, { desc = "Toggle line wrap" })
+
 vim.keymap.set("n", "<S-h>", "<cmd>bprevious<CR>")
 vim.keymap.set("n", "<S-l>", "<cmd>bnext<CR>")
 vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>")

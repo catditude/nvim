@@ -46,6 +46,13 @@ local colors = {
   diffview_delete = "#e88a8a",
   -- Diagnostic underlines
   error_undercurl = "#e06070",
+  -- Markdown heading backgrounds (~16% of each heading color over dark_gray)
+  h1_bg = "#3e2a31",
+  h2_bg = "#3b3440",
+  h3_bg = "#313940",
+  h4_bg = "#31342f",
+  h5_bg = "#404034",
+  h6_bg = "#34343a",
 }
 
 local function hi(group, opts)
@@ -272,19 +279,39 @@ hi("LspInlayHint", { fg = colors.muted, italic = true })
 hi("DiffviewFilePanelInsertions", { fg = colors.diffview_insert })
 hi("DiffviewFilePanelDeletions", { fg = colors.diffview_delete })
 
--- render-markdown.nvim headings (foreground only, no background highlight)
+-- render-markdown.nvim headings. The Bg background also colors the heading border bars.
 hi("RenderMarkdownH1", { fg = colors.pink, bold = true })
 hi("RenderMarkdownH2", { fg = colors.lavender, bold = true })
 hi("RenderMarkdownH3", { fg = colors.light_blue, bold = true })
 hi("RenderMarkdownH4", { fg = colors.mint, bold = true })
 hi("RenderMarkdownH5", { fg = colors.light_yellow, bold = true })
 hi("RenderMarkdownH6", { fg = colors.gray_purple, bold = true })
-hi("RenderMarkdownH1Bg", { fg = colors.pink, bold = true })
-hi("RenderMarkdownH2Bg", { fg = colors.lavender, bold = true })
-hi("RenderMarkdownH3Bg", { fg = colors.light_blue, bold = true })
-hi("RenderMarkdownH4Bg", { fg = colors.mint, bold = true })
-hi("RenderMarkdownH5Bg", { fg = colors.light_yellow, bold = true })
-hi("RenderMarkdownH6Bg", { fg = colors.gray_purple, bold = true })
+hi("RenderMarkdownH1Bg", { fg = colors.pink, bg = colors.h1_bg, bold = true })
+hi("RenderMarkdownH2Bg", { fg = colors.lavender, bg = colors.h2_bg, bold = true })
+hi("RenderMarkdownH3Bg", { fg = colors.light_blue, bg = colors.h3_bg, bold = true })
+hi("RenderMarkdownH4Bg", { fg = colors.mint, bg = colors.h4_bg, bold = true })
+hi("RenderMarkdownH5Bg", { fg = colors.light_yellow, bg = colors.h5_bg, bold = true })
+hi("RenderMarkdownH6Bg", { fg = colors.gray_purple, bg = colors.h6_bg, bold = true })
+-- Default links to ColorColumn (light_gray), which outshines the text around it
+hi("RenderMarkdownCode", { bg = colors.dim_gray }) -- not charcoal: that is CursorLine
+hi("RenderMarkdownCodeInline", { fg = colors.light_pink, bg = colors.soft_gray })
+
+-- Treesitter markup (markdown, vimdoc). Layered under render-markdown decorations
+hi("@markup.heading.1", { fg = colors.pink, bold = true })
+hi("@markup.heading.2", { fg = colors.lavender, bold = true })
+hi("@markup.heading.3", { fg = colors.light_blue, bold = true })
+hi("@markup.heading.4", { fg = colors.mint, bold = true })
+hi("@markup.heading.5", { fg = colors.light_yellow, bold = true })
+hi("@markup.heading.6", { fg = colors.gray_purple, bold = true })
+hi("@markup.strong", { bold = true })
+hi("@markup.italic", { italic = true })
+hi("@markup.strikethrough", { strikethrough = true })
+hi("@markup.raw", { fg = colors.light_pink })
+hi("@markup.quote", { fg = colors.gray_purple, italic = true })
+hi("@markup.list", { fg = colors.pink })
+hi("@markup.link", { fg = colors.light_blue })
+hi("@markup.link.label", { fg = colors.light_blue, underline = true })
+hi("@markup.link.url", { fg = colors.comment_gray, underline = true })
 
 -- Flash
 hi("FlashLabel", { fg = colors.dark_gray, bg = colors.flash_pink, bold = true })
