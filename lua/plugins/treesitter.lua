@@ -17,6 +17,32 @@ return {
   "nvim-treesitter/nvim-treesitter",
   branch = "master",
   lazy = false,
+  -- master registers its query predicates/directives with { all = false }, expecting
+  -- one node per capture. Neovim 0.12 ignores that flag and always passes a list, so
+  -- e.g. #set-lang-from-info-string! errors on every markdown code fence
+  -- ("attempt to call method 'range'"). Hand those handlers the last node, which is
+  -- what all = false used to do. Must run before the plugin loads its predicates.
+  init = function()
+    local q = vim.treesitter.query
+    local function single_node(handler)
+      return function(match, ...)
+        local m = {}
+        for id, nodes in pairs(match) do
+          m[id] = type(nodes) == "table" and nodes[#nodes] or nodes
+        end
+        return handler(m, ...)
+      end
+    end
+    for _, name in ipairs({ "add_predicate", "add_directive" }) do
+      local orig = q[name]
+      q[name] = function(n, handler, opts)
+        if type(opts) == "table" and opts.all == false then
+          handler = single_node(handler)
+        end
+        return orig(n, handler, opts)
+      end
+    end
+  end,
   build = ":TSUpdate",
   main = "nvim-treesitter.configs",
   opts = {

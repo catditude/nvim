@@ -165,7 +165,7 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 - **aerial.nvim** — code outline sidebar (left panel). Toggle with `<leader>o`, navigate symbols with `{`/`}`. Starts at collapse level 1 (markdown: fully expanded heading tree), closes on selection. Uses LSP with treesitter fallback
 - **nvim-navic** — LSP breadcrumbs in statusline (e.g. `MyStruct > impl Display > fmt`)
 - **nvim-cmp** — completion from LSP, buffer, and path sources. `<Tab>` to confirm, ghost text preview, keyword length 2
-- **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes
+- **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes. Pinned to the archived `master` branch (host glibc too old for `main`); a shim in its `init` adapts master's query predicates to Neovim 0.12, which otherwise break markdown code-fence injections
 - **treesitter-context** — sticky scope header (1 line max) showing enclosing function/struct/class
 - **mason.nvim** — LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt, marksman)
 - **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status
