@@ -275,6 +275,9 @@ hi("NoiceCmdlineIconSearch", { fg = colors.light_yellow })
 -- LSP
 hi("LspInlayHint", { fg = colors.muted, italic = true })
 
+-- Markdown table float (lua/md_table.lua): box lines and float border
+hi("MdTableBorder", { fg = colors.light_pink })
+
 -- Diffview file panel
 hi("DiffviewFilePanelInsertions", { fg = colors.diffview_insert })
 hi("DiffviewFilePanelDeletions", { fg = colors.diffview_delete })
