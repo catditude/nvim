@@ -183,6 +183,7 @@ end
 
 local ns = vim.api.nvim_create_namespace("md_table")
 local ns_row = vim.api.nvim_create_namespace("md_table_row")
+local ns_pad = vim.api.nvim_create_namespace("md_table_pad")
 
 local function fill(buf, lines, spans)
   vim.bo[buf].modifiable = true
@@ -255,13 +256,14 @@ end
 -- a non-focusable float drawn over the table shows the wrapped version. The row
 -- under the cursor is highlighted and kept in view.
 
----@type table<integer, {win: integer, buf: integer, key: string, spans: table}>
+---@type table<integer, {win: integer, buf: integer, key: string, spans: table, src_buf: integer}>
 local peeks = {} -- by source window
 
 local function close_peek(win)
   local p = peeks[win]
   if not p then return end
   peeks[win] = nil
+  if vim.api.nvim_buf_is_valid(p.src_buf) then vim.api.nvim_buf_clear_namespace(p.src_buf, ns_pad, 0, -1) end
   if vim.api.nvim_win_is_valid(p.win) then vim.api.nvim_win_close(p.win, true) end
   if vim.api.nvim_buf_is_valid(p.buf) then vim.api.nvim_buf_delete(p.buf, { force = true }) end
 end
@@ -271,6 +273,7 @@ local function update(win)
     return close_peek(win)
   end
   local src, first = table_at_cursor(win)
+  local src_buf = vim.api.nvim_win_get_buf(win)
   if not src then return close_peek(win) end
 
   local info = vim.fn.getwininfo(win)[1]
@@ -306,7 +309,23 @@ local function update(win)
     })
     vim.wo[pwin].winhighlight = "NormalFloat:Normal"
     vim.wo[pwin].wrap = false
-    p = { win = pwin, buf = buf, key = key, spans = spans }
+
+    -- The wrapped table is taller than the raw one. Blank virtual lines under the raw
+    -- table push the following text below the float instead of under it. The raw
+    -- frame is: the covered line above (shift), the visible table lines, and the
+    -- bottom-edge row render-markdown draws (on a blank line after the table, which
+    -- the padding must follow so that edge stays hidden, or on its own virtual line).
+    local last = first + #src - 1
+    local after = vim.api.nvim_buf_get_lines(src_buf, last, last + 1, false)[1]
+    local pad_line = (after and vim.trim(after) == "") and last + 1 or last
+    local frame = shift + (last - anchor + 1) + 1
+    local pad = vim.api.nvim_win_get_height(pwin) - frame
+    if pad > 0 then
+      local vl = {}
+      for i = 1, pad do vl[i] = { { "", "" } } end
+      vim.api.nvim_buf_set_extmark(src_buf, ns_pad, pad_line - 1, 0, { virt_lines = vl })
+    end
+    p = { win = pwin, buf = buf, key = key, spans = spans, src_buf = src_buf }
     peeks[win] = p
   end
 
