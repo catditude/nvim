@@ -183,7 +183,13 @@ end
 
 local ns = vim.api.nvim_create_namespace("md_table")
 local ns_row = vim.api.nvim_create_namespace("md_table_row")
-local ns_pad = vim.api.nvim_create_namespace("md_table_pad")
+-- Padding namespaces are scoped to one window each: the same buffer can be shown in
+-- windows of different widths (e.g. a zen float over the normal window).
+local function pad_ns(win)
+  local ns = vim.api.nvim_create_namespace("md_table_pad_" .. win)
+  vim.api.nvim__ns_set(ns, { wins = { win } })
+  return ns
+end
 
 local function fill(buf, lines, spans)
   vim.bo[buf].modifiable = true
@@ -252,113 +258,214 @@ function M.open()
   })
 end
 
--- Auto-peek: while the cursor (normal mode) is in a table too wide for the window,
--- a non-focusable float drawn over the table shows the wrapped version. The row
--- under the cursor is highlighted and kept in view.
+-- Overlays: every pipe table in view in a markdown window is covered by a
+-- non-focusable float showing it with cells wrapped to the window width
+-- (render-markdown's own table rendering is off). When the wrapped table is taller
+-- than the raw lines, blank virtual lines under the table make room for it. In
+-- insert mode the table under the cursor shows raw so edits are visible.
 
----@type table<integer, {win: integer, buf: integer, key: string, spans: table, src_buf: integer}>
-local peeks = {} -- by source window
+---@class md_table.Overlay
+---@field key string
+---@field lines string[]
+---@field spans table
+---@field buf integer
+---@field win integer?
+---@field height integer
+---@field first integer
+---@field last integer
+---@field src_buf integer
+---@field pad integer? extmark id in src_buf
+---@field pad_ns integer?
 
-local function close_peek(win)
-  local p = peeks[win]
-  if not p then return end
-  peeks[win] = nil
-  if vim.api.nvim_buf_is_valid(p.src_buf) then vim.api.nvim_buf_clear_namespace(p.src_buf, ns_pad, 0, -1) end
-  if vim.api.nvim_win_is_valid(p.win) then vim.api.nvim_win_close(p.win, true) end
-  if vim.api.nvim_buf_is_valid(p.buf) then vim.api.nvim_buf_delete(p.buf, { force = true }) end
+---@type table<integer, table<integer, md_table.Overlay>> source window -> first line -> overlay
+local state = {}
+
+local function is_table_row(buf, n)
+  local l = vim.api.nvim_buf_get_lines(buf, n - 1, n, false)[1]
+  return l ~= nil and l:find("|") ~= nil and vim.trim(l) ~= ""
 end
 
-local function update(win)
-  if vim.api.nvim_get_mode().mode ~= "n" or vim.api.nvim_win_get_config(win).relative ~= "" then
-    return close_peek(win)
+local function tables_in_view(buf, top, bot)
+  local found = {}
+  local n = top
+  while n > 1 and is_table_row(buf, n - 1) do n = n - 1 end
+  local count = vim.api.nvim_buf_line_count(buf)
+  while n <= math.min(bot, count) do
+    if is_table_row(buf, n) then
+      local first = n
+      while is_table_row(buf, n + 1) do n = n + 1 end
+      local src = vim.api.nvim_buf_get_lines(buf, first - 1, n, false)
+      if #src >= 2 and is_delimiter(src[2]) then
+        table.insert(found, { first = first, last = n, src = src })
+      end
+    end
+    n = n + 1
   end
-  local src, first = table_at_cursor(win)
+  return found
+end
+
+local function clear_pad(o)
+  if o.pad and vim.api.nvim_buf_is_valid(o.src_buf) then
+    vim.api.nvim_buf_del_extmark(o.src_buf, o.pad_ns, o.pad)
+  end
+  o.pad = nil
+end
+
+local function hide(o)
+  if o.win and vim.api.nvim_win_is_valid(o.win) then vim.api.nvim_win_close(o.win, true) end
+  o.win = nil
+end
+
+local function destroy(o)
+  hide(o)
+  clear_pad(o)
+  if vim.api.nvim_buf_is_valid(o.buf) then vim.api.nvim_buf_delete(o.buf, { force = true }) end
+end
+
+local function clear_window(win)
+  local ov = state[win]
+  if not ov then return end
+  state[win] = nil
+  for _, o in pairs(ov) do destroy(o) end
+end
+
+local function refresh(win)
+  if not vim.api.nvim_win_is_valid(win) then return clear_window(win) end
   local src_buf = vim.api.nvim_win_get_buf(win)
-  if not src then return close_peek(win) end
+  if not vim.b[src_buf].md_table then return clear_window(win) end
 
   local info = vim.fn.getwininfo(win)[1]
   local avail = info.width - info.textoff
+  -- Just above the source window: under other floats (treesitter-context, popups),
+  -- but above the window itself when that is a float (e.g. zen mode).
+  local parent_z = vim.api.nvim_win_get_config(win).zindex
+  local zindex = parent_z and parent_z + 1 or 10
+  local mode = vim.api.nvim_get_mode().mode:sub(1, 1)
+  local editing = (mode == "i" or mode == "R") and win == vim.api.nvim_get_current_win()
+  local cursor = vim.api.nvim_win_get_cursor(win)[1]
 
-  -- Anchor at the table's first line, or the window's top line if that's scrolled off.
-  local anchor = math.max(first, info.topline)
-  local key = table.concat(src, "\n") .. "\0" .. avail .. "\0" .. anchor
-  local p = peeks[win]
-  if not (p and p.key == key and vim.api.nvim_win_is_valid(p.win)) then
-    close_peek(win)
-    -- Fits unwrapped: render-markdown already draws it fine.
-    if width(M.render(src, math.huge)[1]) <= avail then return end
-    local lines, spans = M.render(src, avail)
-    local buf = vim.api.nvim_create_buf(false, true)
-    vim.bo[buf].bufhidden = "wipe"
-    fill(buf, lines, spans)
-    -- Start one screen line up to cover render-markdown's top edge of the table,
-    -- unless the table starts at the top of the window.
-    local shift = anchor > info.topline and 1 or 0
-    local space = info.height - (anchor - info.topline) + shift
-    local pwin = vim.api.nvim_open_win(buf, false, {
-      relative = "win",
-      win = win,
-      bufpos = { anchor - 1, 0 },
-      row = -shift,
-      col = 0,
-      width = width(lines[1]),
-      height = math.max(1, math.min(#lines, space)),
-      style = "minimal",
-      focusable = false,
-      zindex = 40,
-    })
-    vim.wo[pwin].winhighlight = "NormalFloat:Normal"
-    vim.wo[pwin].wrap = false
-
-    -- The wrapped table is taller than the raw one. Blank virtual lines under the raw
-    -- table push the following text below the float instead of under it. The raw
-    -- frame is: the covered line above (shift), the visible table lines, and the
-    -- bottom-edge row render-markdown draws (on a blank line after the table, which
-    -- the padding must follow so that edge stays hidden, or on its own virtual line).
-    local last = first + #src - 1
-    local after = vim.api.nvim_buf_get_lines(src_buf, last, last + 1, false)[1]
-    local pad_line = (after and vim.trim(after) == "") and last + 1 or last
-    local frame = shift + (last - anchor + 1) + 1
-    local pad = vim.api.nvim_win_get_height(pwin) - frame
-    if pad > 0 then
-      local vl = {}
-      for i = 1, pad do vl[i] = { { "", "" } } end
-      vim.api.nvim_buf_set_extmark(src_buf, ns_pad, pad_line - 1, 0, { virt_lines = vl })
+  local old, ov = state[win] or {}, {}
+  -- Pass 1: render and pad. Padding moves later text, so positions come after.
+  for _, t in ipairs(tables_in_view(src_buf, info.topline, info.botline)) do
+    local o = old[t.first]
+    old[t.first] = nil
+    local key = table.concat(t.src, "\n") .. "\0" .. avail
+    if editing and cursor >= t.first and cursor <= t.last then
+      if o then destroy(o) end
+    else
+      if not (o and o.key == key and vim.api.nvim_buf_is_valid(o.buf)) then
+        if o then destroy(o) end
+        local lines, spans = M.render(t.src, avail)
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.bo[buf].bufhidden = "hide" -- kept while the float is hidden; destroy() deletes it
+        fill(buf, lines, spans)
+        o = { key = key, lines = lines, spans = spans, buf = buf, src_buf = src_buf }
+      end
+      o.first, o.last = t.first, t.last
+      -- start_vcol = 0 leaves out virtual lines above the table (e.g. a heading border).
+      local raw = vim.api.nvim_win_text_height(win, { start_row = t.first - 1, start_vcol = 0, end_row = t.last - 1 }).all
+      clear_pad(o)
+      if #o.lines > raw then
+        local vl = {}
+        for i = 1, #o.lines - raw do vl[i] = { { "", "" } } end
+        o.pad_ns = pad_ns(win)
+        o.pad = vim.api.nvim_buf_set_extmark(src_buf, o.pad_ns, t.last - 1, 0, { virt_lines = vl })
+      end
+      o.height = math.max(#o.lines, raw)
+      -- Raw lines taller than the rendered table: blank fill so they don't show through.
+      if vim.api.nvim_buf_line_count(o.buf) ~= o.height then
+        local fill_lines = vim.list_extend(vim.deepcopy(o.lines), vim.fn["repeat"]({ "" }, o.height - #o.lines))
+        vim.bo[o.buf].modifiable = true
+        vim.api.nvim_buf_set_lines(o.buf, 0, -1, false, fill_lines)
+        vim.bo[o.buf].modifiable = false
+      end
+      ov[t.first] = o
     end
-    p = { win = pwin, buf = buf, key = key, spans = spans, src_buf = src_buf }
-    peeks[win] = p
   end
+  for _, o in pairs(old) do destroy(o) end
+  state[win] = ov
 
-  -- Source line -> table row: header and delimiter map to the header.
-  local idx = vim.api.nvim_win_get_cursor(win)[1] - first + 1
-  local span = p.spans[math.max(1, idx - 1)]
-  vim.api.nvim_buf_clear_namespace(p.buf, ns_row, 0, -1)
-  for i = span.start, span.start + span.height - 1 do
-    vim.api.nvim_buf_set_extmark(p.buf, ns_row, i, 0, { line_hl_group = "CursorLine" })
-  end
-  vim.api.nvim_win_call(p.win, function()
-    local h = vim.api.nvim_win_get_height(0)
-    local top = vim.fn.line("w0") - 1
-    if span.start < top or span.start + span.height > top + h then
-      vim.fn.winrestview({ topline = math.max(1, span.start) })
+  -- Pass 2: place each float over its table's screen rows.
+  for _, o in pairs(ov) do
+    local row, offset
+    if o.first >= info.topline then
+      local pos = vim.fn.screenpos(win, o.first, 1)
+      row, offset = pos.row - info.winrow, 0
+      if pos.row == 0 then row = nil end -- pushed below the window
+    elseif o.last >= info.topline then
+      row = 0
+      offset = vim.api.nvim_win_text_height(win, { start_row = o.first - 1, start_vcol = 0, end_row = info.topline - 2 }).all
+    else
+      -- Table scrolled off the top, but its padding (virtual lines above topline)
+      -- may still show as filler at the top of the window.
+      row = 0
+      local topfill = o.last + 1 == info.topline and vim.api.nvim_win_call(win, vim.fn.winsaveview).topfill or 0
+      offset = o.height - topfill
     end
-  end)
+    local height = row and math.min(o.height - offset, info.height - row) or 0
+    if height <= 0 then
+      hide(o)
+    else
+      local cfg = {
+        relative = "win",
+        win = win,
+        row = row,
+        col = info.textoff,
+        width = width(o.lines[1]),
+        height = height,
+        focusable = false,
+        zindex = zindex,
+      }
+      if o.win and vim.api.nvim_win_is_valid(o.win) then
+        vim.api.nvim_win_set_config(o.win, cfg)
+      else
+        cfg.style = "minimal"
+        cfg.noautocmd = true
+        o.win = vim.api.nvim_open_win(o.buf, false, cfg)
+        vim.wo[o.win].winhighlight = "NormalFloat:Normal"
+        vim.wo[o.win].wrap = false
+        vim.wo[o.win].scrolloff = 0 -- global scrolloff=999 would re-center and undo topline
+      end
+      -- Cursor too: the view snaps back to keep the float's cursor visible.
+      vim.api.nvim_win_set_cursor(o.win, { offset + 1, 0 })
+      vim.api.nvim_win_call(o.win, function() vim.fn.winrestview({ topline = offset + 1 }) end)
+    end
+
+    -- Highlight the row under the cursor. Header and delimiter map to the header.
+    vim.api.nvim_buf_clear_namespace(o.buf, ns_row, 0, -1)
+    if cursor >= o.first and cursor <= o.last then
+      local span = o.spans[math.max(1, cursor - o.first)]
+      for i = span.start, span.start + span.height - 1 do
+        vim.api.nvim_buf_set_extmark(o.buf, ns_row, i, 0, { line_hl_group = "CursorLine" })
+      end
+    end
+  end
 end
 
---- Enable auto-peek for a markdown buffer.
+local function refresh_all()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    -- Valid check: refreshing one window can close floats later in this list.
+    if vim.api.nvim_win_is_valid(win) and (state[win] or vim.b[vim.api.nvim_win_get_buf(win)].md_table) then
+      refresh(win)
+    end
+  end
+  for win in pairs(state) do
+    if not vim.api.nvim_win_is_valid(win) then clear_window(win) end
+  end
+end
+
+local group = vim.api.nvim_create_augroup("md_table", { clear = true })
+vim.api.nvim_create_autocmd(
+  { "CursorMoved", "CursorMovedI", "InsertEnter", "InsertLeave", "TextChanged", "TextChangedI",
+    "WinScrolled", "WinResized", "BufWinEnter", "BufEnter" },
+  { group = group, callback = function() vim.schedule(refresh_all) end }
+)
+
+--- Enable table overlays for a markdown buffer.
 function M.attach(buf)
   if buf == 0 then buf = vim.api.nvim_get_current_buf() end
-  local group = vim.api.nvim_create_augroup("md_table_" .. buf, { clear = true })
-  vim.api.nvim_create_autocmd({ "CursorMoved", "TextChanged", "InsertLeave", "WinScrolled", "WinResized", "BufWinEnter", "WinEnter" }, {
-    group = group,
-    buffer = buf,
-    callback = function() update(vim.api.nvim_get_current_win()) end,
-  })
-  vim.api.nvim_create_autocmd({ "InsertEnter", "BufLeave", "WinLeave" }, {
-    group = group,
-    buffer = buf,
-    callback = function() close_peek(vim.api.nvim_get_current_win()) end,
-  })
+  vim.b[buf].md_table = true
+  vim.schedule(refresh_all)
 end
 
 return M

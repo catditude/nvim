@@ -13,8 +13,9 @@ lua/lsp_setup.lua       → LSP servers, keymaps, document highlight, inlay hint
 lua/file_watcher.lua    → Auto-reload buffers on external file changes (libuv polling)
 lua/plugins/*.lua       → One file per plugin
 lua/lsp/*.lua           → LSP server configs (native 0.11 format)
-ftplugin/markdown.lua   → Markdown buffer options (nowrap, no relative numbers) + `<leader>mt`
-lua/md_table.lua        → Markdown table under cursor in a float with word-wrapped cells
+ftplugin/markdown.lua   → Markdown buffer options (wrap, linebreak, breakindent, no relative numbers) + `<leader>mt`
+lua/md_table.lua        → Draws markdown tables as floats with word-wrapped cells
+lua/md_zen.lua          → Opens markdown files in zen (100-col reading view); `q` closes it
 colors/1989.lua         → Colorscheme
 ```
 
@@ -151,7 +152,9 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 | `s` | Flash jump |
 | `]t` / `[t` | Next / prev todo comment |
 | `<leader>?` | Which-key (buffer keymaps) |
-| `<leader>mt` | Markdown: focus the wrapped-table float (auto-shown over wide tables) |
+| `<leader>mt` | Markdown: open the table under the cursor focused (centered, scrollable) |
+| `<leader>z` | Zen reading view (snacks.zen): centered 100-column text, prose wraps at 100 |
+| `q` | In zen on a markdown file: close zen (elsewhere: record macro as usual) |
 
 ## Plugins
 
@@ -169,11 +172,11 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 - **treesitter** — syntax highlighting via `vim.treesitter.start()` on all filetypes. Pinned to the archived `master` branch (host glibc too old for `main`); a shim in its `init` adapts master's query predicates to Neovim 0.12, which otherwise break markdown code-fence injections
 - **treesitter-context** — sticky scope header (1 line max) showing enclosing function/struct/class
 - **mason.nvim** — LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt, marksman)
-- **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status
+- **snacks.nvim** — startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status; zen reading view (`<leader>z`, 104 wide = 4 number column + 100 text, dimming off, solid `zen_backdrop` background hiding the window behind)
 - **blink.indent** — fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
 - **todo-comments.nvim** — colorized TODO/FIXME/HACK/NOTE highlights with `]t`/`[t` navigation, `:TodoTelescope` search
-- **render-markdown.nvim** — renders markdown inline in the buffer (headings, code blocks, checkboxes, tables, etc.). Headings and code blocks sized to their content (`width = 'block'`), heading border bars, thin code fences, no sign-column icons, rounded tables with `cell = 'trimmed'`. Cells can't wrap, so markdown buffers use `nowrap` (wrapped rows break the table drawing); wide tables get an auto-shown float with cells wrapped to the window width (`lua/md_table.lua`). Rendering turns off while the window is scrolled sideways (plugin only renders at `leftcol == 0`). Cursor line stays rendered (anti-conceal off); insert mode shows raw text
+- **render-markdown.nvim** — renders markdown inline in the buffer (headings, code blocks, checkboxes, etc.). Headings and code blocks sized to their content (`width = 'block'`), heading border bars, thin code fences, no sign-column icons. Its table rendering is off (`pipe_table.enabled = false`): tables are drawn by `lua/md_table.lua`, so prose can wrap. Rendering turns off while the window is scrolled sideways (plugin only renders at `leftcol == 0`). Cursor line stays rendered (anti-conceal off); insert mode shows raw text
 - **mini.icons** — icon provider
 - **auto-session** — auto save/restore sessions per directory
 - **vim-tmux-navigator** — seamless split/pane navigation with tmux
@@ -213,8 +216,11 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 
 ## Custom Features
 
-### Markdown table float (`lua/md_table.lua`)
-While the cursor is in a pipe table too wide for the window (normal mode), a non-focusable float drawn over the table shows it with cells word-wrapped to the window width; the cursor's row is highlighted and kept in view, and the float closes on leaving the table or entering insert mode. Blank virtual lines under the raw table push the following text below the float. Tables that fit are left to render-markdown. `<leader>mt` opens the same view focused and centered (to scroll a tall table). Box lines are light pink (`MdTableBorder`) so the float's edges stand out. Column widths: columns narrower than an even share keep their width, the rest split the remainder. Honors `:--:` / `--:` alignment. Strips `**`, `__`, backticks, and reduces `[text](url)` to `text`. `q` / `<Esc>` closes it.
+### Markdown zen (`lua/md_zen.lua`)
+A markdown file opens in zen automatically when it is the only regular window in its tab, not in diff mode, and the screen is wider than the zen column (so splits, diffview and the review layout are left alone). `q` closes zen; outside zen `q` keeps its normal meaning.
+
+### Markdown tables (`lua/md_table.lua`)
+Every pipe table in view in a markdown window is covered by a non-focusable float that draws it with cells word-wrapped to the window width (columns narrower than an even share keep their width, the rest split the remainder; `:--:`/`--:` alignment honored; `**`, `__`, backticks stripped, `[text](url)` shown as `text`). Box lines are light pink (`MdTableBorder`). When the wrapped table is taller than the raw lines, blank virtual lines under the table push the following text down; floats follow scrolling, including tables partly scrolled off the top. The row under the cursor is highlighted. In insert mode the table under the cursor shows raw so edits are visible. `<leader>mt` opens the table focused and centered (to scroll one taller than the window); `q` / `<Esc>` closes it. Padding uses window-scoped namespaces (`nvim__ns_set`, experimental API), so the same buffer in two windows of different widths (e.g. under zen) pads each correctly. Works inside floats (zen): overlays sit one zindex above the source window.
 
 ### File watcher (`lua/file_watcher.lua`)
 Polls open files every 1 second with `vim.uv.new_fs_poll()` and runs `checktime` when changes are detected. Useful when external tools (formatters, git operations) modify files outside nvim.

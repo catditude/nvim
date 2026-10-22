@@ -53,6 +53,8 @@ local colors = {
   h4_bg = "#31342f",
   h5_bg = "#404034",
   h6_bg = "#34343a",
+  -- Zen mode backdrop: solid, a step darker than dark_gray
+  zen_backdrop = "#121212",
 }
 
 local function hi(group, opts)
@@ -274,6 +276,9 @@ hi("NoiceCmdlineIconSearch", { fg = colors.light_yellow })
 
 -- LSP
 hi("LspInlayHint", { fg = colors.muted, italic = true })
+
+-- Zen backdrop (read by lua/plugins/snacks.lua; snacks takes a hex string, not a group)
+hi("ZenBackdrop", { bg = colors.zen_backdrop })
 
 -- Markdown table float (lua/md_table.lua): box lines and float border
 hi("MdTableBorder", { fg = colors.light_pink })

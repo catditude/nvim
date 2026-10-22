@@ -42,8 +42,26 @@ return {
             end,
         })
     end,
+    keys = {
+        { "<leader>z", function() Snacks.zen() end, desc = "Zen: 100-column reading view" },
+    },
     ---@type snacks.Config
     opts = {
+        -- Reading view: text centered in a fixed-width float. Width covers the number
+        -- column (4) plus 100 columns of text.
+        zen = { toggles = { dim = false } },
+        styles = {
+            zen = {
+                width = 104,
+                -- Solid instead of the default 40% see-through black, so text behind
+                -- zen is hidden. blend = 0 with transparent = false uses bg as-is.
+                backdrop = {
+                    transparent = false,
+                    blend = 0,
+                    bg = string.format("#%06x", vim.api.nvim_get_hl(0, { name = "ZenBackdrop" }).bg or 0),
+                },
+            },
+        },
         -- Back vim.ui.select with the snacks picker (a proper float). The built-in
         -- select renders as a numbered inputlist through the message area, which
         -- noice then reformats into a ragged, indented list; this replaces it and
