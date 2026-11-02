@@ -177,8 +177,10 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 - **noice.nvim** — floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
 - **todo-comments.nvim** — colorized TODO/FIXME/HACK/NOTE highlights with `]t`/`[t` navigation, `:TodoTelescope` search
 - **render-markdown.nvim** — renders markdown inline in the buffer (headings, code blocks, checkboxes, etc.). Headings and code blocks sized to their content (`width = 'block'`), heading border bars, thin code fences, no sign-column icons. Its table rendering is off (`pipe_table.enabled = false`): tables are drawn by `lua/md_table.lua`, so prose can wrap. Rendering turns off while the window is scrolled sideways (plugin only renders at `leftcol == 0`). Cursor line stays rendered (anti-conceal off); insert mode shows raw text
+- **nvim-autopairs**: auto-closes `()`, `[]`, `{}`, quotes. Typing the closer steps over it; insert-mode `<CR>` between `{}` splits and indents, `<BS>` deletes the pair. Rust: `'` doesn't pair after a word char, `<` or `&`, so lifetimes (`&'a`, `<'a>`) type normally
 - **mini.icons** — icon provider
 - **auto-session** — auto save/restore sessions per directory
+- **auto-save.nvim**: writes modified buffers on `InsertLeave`/`TextChanged` (1s debounce, `InsertEnter` cancels) and immediately on `BufLeave`/`FocusLost`/`QuitPre`, so switching to a tmux pane saves first (tmux `focus-events on`). Skips special buffers (an oil buffer's write applies its pending filesystem changes) and `gitcommit`/`gitrebase` (git is the editor, so quitting unsaved must still abort). Saves run `BufWritePre`, so Rust files format on every autosave. `:q!` no longer discards edits, since `QuitPre` saves first. `:ASToggle` turns it off for the session
 - **vim-tmux-navigator** — seamless split/pane navigation with tmux
 
 ## LSP Servers
@@ -224,6 +226,8 @@ Every pipe table in view in a markdown window is covered by a non-focusable floa
 
 ### File watcher (`lua/file_watcher.lua`)
 Polls open files every 1 second with `vim.uv.new_fs_poll()` and runs `checktime` when changes are detected. Useful when external tools (formatters, git operations) modify files outside nvim.
+
+Autosave writes also trip the poll, but `checktime` finds the mtime nvim recorded at write time and does nothing. An external change to an unmodified buffer reloads it without a write back (auto-save only writes `modified` buffers).
 
 ### Git ahead/behind (`lua/git_ahead_behind.lua`)
 Periodically queries `git rev-list --left-right --count HEAD...@{upstream}` to populate `vim.g._git_ahead` and `vim.g._git_behind` for the lualine statusline. Refreshes every 30 seconds, on focus gain, after buffer writes, and on `BufEnter`.
