@@ -254,6 +254,11 @@ Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`
 - `scrolloff=999` (cursor stays centered)
 - `updatetime=300` (faster CursorHold for document highlight)
 - Histogram diff algorithm with `linematch:200`
+- `undofile` (undo survives restarts; with autosave this replaces `:q!` as the way to back out edits)
+- `ignorecase` + `smartcase` (search is case-insensitive unless the pattern has a capital)
+- `signcolumn=yes` (no sideways shift when git/diagnostic signs appear)
+- `splitright` + `splitbelow`
+- Yanked text flashes briefly (`vim.hl.on_yank`)
 
 ## External Dependencies
 

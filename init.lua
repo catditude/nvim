@@ -7,6 +7,17 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 999
 vim.opt.updatetime = 300
 vim.opt.autoread = true
+-- Autosave writes every edit, so :q! no longer discards; persistent undo is the way back.
+vim.opt.undofile = true
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.signcolumn = "yes"
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+  callback = function() vim.hl.on_yank() end,
+})
 vim.opt.diffopt:append({ "algorithm:histogram", "linematch:200" })
 vim.cmd.colorscheme("1989")
 
