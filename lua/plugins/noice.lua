@@ -16,5 +16,10 @@ return {
             long_message_to_split = true,
             lsp_doc_border = true,
         },
+        -- Messages fall back to the mini view (snacks notifier and nvim-notify are
+        -- off), which doesn't wrap by default, so long lines like <C-g> get cut off.
+        views = {
+            mini = { win_options = { wrap = true } },
+        },
     },
 }
