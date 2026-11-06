@@ -60,7 +60,7 @@ Leader is **Space**.
 | Key | What it does |
 |-----|-------------|
 | `gd` | Go to definition |
-| `gr` | References |
+| `gr` | References (Telescope). Nvim's default `grn`/`gra`/`grr`/`gri`/`grt`/`grx` are removed so `gr` runs without waiting for a second key |
 | `gy` | Type definition |
 | `<leader>d` | Diagnostic float |
 | `]d` / `[d` | Next / prev diagnostic |
@@ -183,16 +183,16 @@ Claude runs in its own tmux pane. Run `/ide` in Claude and pick an nvim: it list
 - **telescope.nvim**: fuzzy finder with fzf-native sorter
 - **flash.nvim**: jump anywhere with `s`, pink highlight labels
 - **gitsigns.nvim**: gutter signs, inline hunk previews, staging, blame, word diff
-- **diffview.nvim**: adaptive diff layout via `lua/diff_layout.lua`: side-by-side when the window is wide (`>= 210` cols, e.g. a zoomed pane), else stacked (top/bottom). Re-evaluated on each open. Tree file panel (30 cols), treesitter highlighting in diff buffers, full file content (no folding). `<leader>b` toggles the file panel to reclaim width in a narrow pane
+- **diffview.nvim**: adaptive diff layout via `lua/diff_layout.lua`: side-by-side when the window is wide (`>= 210` cols, e.g. a zoomed pane), else stacked (top/bottom). Re-evaluated on each open. Tree file panel (30 cols), treesitter highlighting in diff buffers, full file content (no folding). `<leader>b` toggles the file panel to reclaim width in a narrow pane. Its default conflict maps `<leader>ca`/`<leader>co` are off, so code action and outgoing calls keep working in diff buffers; on close, markdown buffers get zen's `q` back (diffview deletes buffer-local `q`)
 - **lazygit.nvim**: full lazygit TUI inside nvim (uses delta as diff pager)
 - **which-key.nvim**: keymap hints popup
 - **lualine.nvim**: statusline: mode, branch, dirty indicator (`*`), ahead/behind arrows, diff stats, diagnostics, shortened path, filename, navic breadcrumbs, filetype, position. Tabline shows open buffers (with index + name) and tab pages
-- **aerial.nvim**: code outline sidebar (left panel). Toggle with `<leader>o`, navigate symbols with `{`/`}`. Starts at collapse level 1 (markdown: fully expanded heading tree), closes on selection. Uses LSP with treesitter fallback
+- **aerial.nvim**: code outline sidebar (left panel). Toggle with `<leader>o`, navigate symbols with `{`/`}` in buffers aerial has symbols for (buffer-local; not markdown, where `{`/`}` stay paragraph motions). Loads with the first file so it can set those maps. Starts at collapse level 1 (markdown: fully expanded heading tree), closes on selection. Uses LSP with treesitter fallback
 - **nvim-navic**: LSP breadcrumbs in statusline (e.g. `MyStruct > impl Display > fmt`)
 - **nvim-cmp**: completion from LSP, buffer, and path sources. `<Tab>` to confirm, ghost text preview, keyword length 2
 - **treesitter**: syntax highlighting via `vim.treesitter.start()` on all filetypes. Pinned to the archived `master` branch (host glibc too old for `main`); a shim in its `init` adapts master's query predicates to Neovim 0.12, which otherwise break markdown code-fence injections
 - **treesitter-context**: sticky scope header (1 line max) showing enclosing function/struct/class
-- **mason.nvim**: LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt, marksman)
+- **mason.nvim**: LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt, marksman, lua-language-server, json-lsp)
 - **snacks.nvim**: startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status; zen reading view (`<leader>z`, 104 wide = 4 number column + 100 text, dimming off, solid `zen_backdrop` background hiding the window behind)
 - **blink.indent**: fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim**: floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
@@ -213,13 +213,13 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 
 | Server | Language | Notes |
 |--------|----------|-------|
-| **rust-analyzer** | Rust | Uses clippy for diagnostics |
+| **rust-analyzer** | Rust | Diagnostics come only from clippy, which runs on save (with autosave, ~1s after you stop typing). Native diagnostics are off because they repeated clippy's |
 | **basedpyright** | Python | Inlay hints for variable types, return types, argument names, generics. `typeCheckingMode = 'standard'`, interpreter from root `.venv/bin/python` |
 | **ruff** | Python | Linting + formatting, hover disabled (basedpyright handles it). Uses root `.venv/bin/ruff` if present, else PATH (`:echo g:ruff_lsp_bin`) |
 | **lua_ls** | Lua | Neovim runtime in workspace library, recognizes `vim` global |
 | **jsonls** | JSON | Validation, formatting, schema support (Claude Code settings schema configured) |
 | **vtsls** | TypeScript / JavaScript | VSCode tsserver wrapper; inlay hints for params, types, returns. Handles `.ts`/`.tsx`/`.js`/`.jsx` |
-| **eslint** | TypeScript / JavaScript | Lint diagnostics + `--fix` code actions; self-deactivates without an eslint config |
+| **eslint** | TypeScript / JavaScript | Lint diagnostics + `--fix` code actions. Starts only under an eslint config file, and needs eslint installed in the project (`node_modules`, e.g. after `brazil-build`); otherwise it warns once. Settings adapted from nvim-lspconfig: without `validate = 'on'` and a `workspaceFolder` the server reports nothing |
 | **bashls** | Bash / sh | Completion + hover; delegates diagnostics to `shellcheck` and formatting to `shfmt` (both installed via Mason) |
 | **marksman** | Markdown | Go to definition on `[x](file.md#heading)` links, path/heading completion, broken-link diagnostics |
 
@@ -236,7 +236,7 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 
 ## LSP Extras
 
-- **Inline diagnostics**: short message at the end of each line with a problem; on the cursor line, the full message on lines below it instead (`virtual_text` / `virtual_lines` split by `current_line`). `<leader>d` still opens the float. The inline text uses muted colors (`diag_*` in `colors/1989.lua`); signs and the float keep the full severity colors. Hints are gray, not mint, since mint is also used for types and numbers. Rust errors usually show twice: rust-analyzer's live check and clippy (runs on save) both report them
+- **Inline diagnostics**: short message at the end of each line with a problem; on the cursor line, the full message on lines below it instead (`virtual_text` / `virtual_lines` split by `current_line`). `<leader>d` still opens the float. The inline text uses muted colors (`diag_*` in `colors/1989.lua`); signs and the float keep the full severity colors. Hints are gray, not mint, since mint is also used for types and numbers.
 - **Document highlight**: cursor hold highlights all references to the symbol under cursor, clears on move
 - **Ruff hover disabled**: ruff's hover is turned off so basedpyright is the sole hover provider for Python
 - **nvim-cmp capabilities**: injected into all LSP servers via `vim.lsp.config('*')`
