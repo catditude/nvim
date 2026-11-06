@@ -11,6 +11,8 @@ return {
           "shellcheck", -- bashls delegates diagnostics here
           "shfmt",      -- bashls delegates formatting here
           "marksman",
+          "lua-language-server",
+          "json-lsp",
         },
         run_on_start = true,
         start_delay = 3000,
