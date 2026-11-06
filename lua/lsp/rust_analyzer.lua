@@ -8,6 +8,9 @@ return {
       check = {
         command = 'clippy', -- Use clippy instead of cargo check
       },
+      -- Native diagnostics repeat what clippy reports on save (autosave runs it
+      -- ~1s after each edit), so every error showed twice.
+      diagnostics = { enable = false },
     },
   },
 }
