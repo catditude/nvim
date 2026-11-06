@@ -34,6 +34,12 @@ vim.diagnostic.config({
 
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
 vim.keymap.set('n', 'gr', function() require('telescope.builtin').lsp_references() end, { desc = 'Find references' })
+-- Nvim's default gr* LSP maps make `gr` wait 'timeoutlen' for a second key.
+-- Rename, code action and type definition live on <leader>cr, <leader>ca, gy;
+-- implementation (gri) and codelens run (grx) are dropped.
+for _, lhs in ipairs({ 'grn', 'gra', 'grr', 'gri', 'grt', 'grx' }) do
+  pcall(vim.keymap.del, 'n', lhs)
+end
 vim.keymap.set('n', 'gy', vim.lsp.buf.type_definition, { desc = 'Go to type definition' })
 vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, { desc = 'Show diagnostic' })
 vim.keymap.set('n', ']d', function() vim.diagnostic.jump({ count = 1 }) end, { desc = 'Next diagnostic' })

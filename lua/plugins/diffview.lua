@@ -47,10 +47,19 @@ return {
       view_closed = function()
         vim.opt.showtabline = vim._diffview_saved_showtabline or 1
         vim._diffview_saved_showtabline = nil
+        -- Diffview deletes its buffer-local `q` from working-tree buffers on close,
+        -- taking md_zen's `q` with it; put that back.
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == "" and vim.bo[buf].filetype == "markdown" then
+            require("md_zen").attach(buf)
+          end
+        end
       end,
     },
     keymaps = {
-      view = { q = "<cmd>DiffviewClose<cr>" },
+      -- Default conflict maps <leader>ca/<leader>co would shadow code action and
+      -- outgoing calls in working-tree buffers.
+      view = { q = "<cmd>DiffviewClose<cr>", ["<leader>ca"] = false, ["<leader>co"] = false },
       file_panel = { q = "<cmd>DiffviewClose<cr>" },
       file_history_panel = { q = "<cmd>DiffviewClose<cr>" },
     },
