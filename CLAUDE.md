@@ -17,19 +17,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Neovim 0.11+ config using **lazy.nvim**. Minimal and modular.
 
-**Leader key:** Space (`vim.g.mapleader = " "`) — set in `init.lua` before plugins load.
+**Leader key:** Space (`vim.g.mapleader = " "`), set in `init.lua` before plugins load.
 
 ## Architecture
 
-All custom Lua modules go in `lua/`. Only Neovim-required paths (`init.lua`, `colors/`) stay at root.
+All custom Lua modules go in `lua/`. Only Neovim-required paths (`init.lua`, `colors/`, `ftplugin/`) stay at root.
 
 ```
 init.lua              → Entry point: options, keymaps, and requires for lua/ modules
 lua/lazy_init.lua     → Bootstraps lazy.nvim, imports plugins from lua/plugins/
 lua/lsp_setup.lua     → Native LSP configuration (enables servers, keymaps)
 lua/file_watcher.lua  → Auto-reloads buffers when files change externally (libuv polling)
+lua/*.lua             → Other custom feature modules (full list in README.md, Structure)
 lua/plugins/*.lua     → Plugin specifications (one file per plugin or category)
 lua/lsp/*.lua         → LSP server configs (Neovim 0.11 native format)
+ftplugin/*.lua        → Per-filetype buffer options
 colors/*.lua          → Colorscheme definitions
 lazy-lock.json        → Locked plugin versions for reproducibility
 ```
@@ -79,17 +81,29 @@ vim.lsp.enable('rust_analyzer')
 
 ### LSP Gotcha: Two-step Registration
 
-Configs live in `lua/lsp/` (Lua require path), but `vim.lsp.enable()` only searches `lsp/` on the runtimepath (e.g. `~/.config/nvim/lsp/`). Since our configs are in `lua/lsp/`, you **must** call `vim.lsp.config()` with `require()` before `vim.lsp.enable()`. Omitting the `vim.lsp.config()` call means the config is silently ignored — the server may start with Neovim's built-in defaults instead.
+Configs live in `lua/lsp/` (Lua require path), but `vim.lsp.enable()` only searches `lsp/` on the runtimepath (e.g. `~/.config/nvim/lsp/`). Since our configs are in `lua/lsp/`, you **must** call `vim.lsp.config()` with `require()` before `vim.lsp.enable()`. Omitting the `vim.lsp.config()` call means the config is silently ignored, and the server may start with Neovim's built-in defaults instead.
 
 ## Colorscheme Conventions
 
-All highlight groups — including plugin-specific ones — go in `colors/1989.lua`, not in plugin `config` callbacks. This keeps theming centralized.
+All highlight groups, including plugin-specific ones, go in `colors/1989.lua`, not in plugin `config` callbacks. This keeps theming centralized.
 
 Every hex color must be a named entry in the `colors` palette table at the top of the file. Never use raw hex literals in `hi()` calls.
 
 ## Neovim API (0.11+)
 
-Use modern APIs — avoid deprecated ones:
+Use modern APIs, not deprecated ones:
 - `vim.uv` not `vim.loop`
 - `vim.diagnostic.jump({ count = N })` not `vim.diagnostic.goto_next/prev`
 - libuv handles: always call both `:stop()` and `:close()` to avoid fd leaks
+
+## Autosave Gotcha
+
+auto-save.nvim writes on `BufLeave`/`FocusLost`, so it runs a buffer's write hooks without the user asking. Its condition in `lua/plugins/auto-save.lua` skips any non-empty `buftype`, which covers oil (a write applies filesystem changes) and claudecode.nvim proposals (a write accepts Claude's diff). A new plugin whose buffer has `buftype=""` but a write with side effects needs its own exclusion there.
+
+## Testing Changes
+
+Test in a real nvim with this config, not `-u NONE`: headless (`nvim --headless <file> -c 'luafile test.lua'`) for logic, or a detached tmux session with `--listen` when the behavior needs a UI (treesitter injections and decoration providers only run on redraw).
+
+- Pass a file argument, so auto-session doesn't save a session for the test directory.
+- Set `CLAUDE_CONFIG_DIR` to a scratch dir. claudecode.nvim starts with every nvim and writes a lock file to `~/.claude/ide/`, and `autoConnectIde` is on, so real Claude sessions can connect to a test nvim.
+- `tmux kill-session` can leave the `nvim --embed` server process running. Check `ps -eo pid,ppid,args | grep '[n]vim --embed'` for PPID 1 and stop that PID.
