@@ -46,6 +46,12 @@ local colors = {
   diffview_delete = "#e88a8a",
   -- Diagnostic underlines
   error_undercurl = "#e06070",
+  -- Inline diagnostic text: muted (~5:1 on dark_gray, vs ~13:1 for code) so it
+  -- reads as an annotation. Hint is gray: mint is also Type/Number/Constant.
+  diag_error = "#c46a6a",
+  diag_warn = "#948f6b",
+  diag_info = "#7590ab",
+  diag_hint = "#8c8c96",
   -- Markdown heading backgrounds (~16% of each heading color over dark_gray)
   h1_bg = "#3e2a31",
   h2_bg = "#3b3440",
@@ -202,11 +208,17 @@ hi("markdownRule", { fg = colors.light_blue })
 hi("DiagnosticError", { fg = colors.dark_pink })
 hi("DiagnosticWarn", { fg = colors.light_yellow })
 hi("DiagnosticInfo", { fg = colors.light_blue })
-hi("DiagnosticHint", { fg = colors.mint })
+hi("DiagnosticHint", { fg = colors.diag_hint })
 hi("DiagnosticUnderlineError", { undercurl = true, sp = colors.error_undercurl })
 hi("DiagnosticUnderlineWarn", { undercurl = true, sp = colors.light_yellow })
 hi("DiagnosticUnderlineInfo", { undercurl = true, sp = colors.light_blue })
-hi("DiagnosticUnderlineHint", { undercurl = true, sp = colors.mint })
+hi("DiagnosticUnderlineHint", { undercurl = true, sp = colors.diag_hint })
+for _, kind in ipairs({ "VirtualText", "VirtualLines" }) do
+  hi("Diagnostic" .. kind .. "Error", { fg = colors.diag_error })
+  hi("Diagnostic" .. kind .. "Warn", { fg = colors.diag_warn })
+  hi("Diagnostic" .. kind .. "Info", { fg = colors.diag_info })
+  hi("Diagnostic" .. kind .. "Hint", { fg = colors.diag_hint })
+end
 
 -- Gitsigns gutter signs
 hi("GitSignsAdd", { fg = colors.mint })

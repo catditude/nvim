@@ -25,7 +25,11 @@ vim.lsp.inlay_hint.enable(true)
 vim.diagnostic.config({
   underline = { severity = { min = vim.diagnostic.severity.ERROR } },
   signs = true,
-  virtual_text = false,
+  -- Short message at the end of every line except the cursor line; the cursor
+  -- line gets the full message on lines below it (long Rust errors don't fit
+  -- at end of line). The current_line split keeps the two from duplicating.
+  virtual_text = { current_line = false },
+  virtual_lines = { current_line = true },
 })
 
 vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to definition' })
