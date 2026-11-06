@@ -5,8 +5,9 @@ return {
     version = "^1.0.0",
     opts = {
         condition = function(buf)
-            -- Special buffers: oil's buftype is acwrite, where a write applies
-            -- the pending filesystem changes.
+            -- Special buffers. Both are acwrite: a write in an oil buffer applies its
+            -- pending filesystem changes, and a write in a claudecode.nvim proposal
+            -- accepts Claude's diff.
             if vim.fn.getbufvar(buf, "&buftype") ~= "" then return false end
             -- git is the editor here: quitting without saving must still abort.
             local ft = vim.fn.getbufvar(buf, "&filetype")
