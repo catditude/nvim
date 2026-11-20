@@ -107,3 +107,7 @@ Test in a real nvim with this config, not `-u NONE`: headless (`nvim --headless 
 - Pass a file argument, so auto-session doesn't save a session for the test directory.
 - Set `CLAUDE_CONFIG_DIR` to a scratch dir. claudecode.nvim starts with every nvim and writes a lock file to `~/.claude/ide/`, and `autoConnectIde` is on, so real Claude sessions can connect to a test nvim.
 - `tmux kill-session` can leave the `nvim --embed` server process running. Check `ps -eo pid,ppid,args | grep '[n]vim --embed'` for PPID 1 and stop that PID.
+- A detached tmux session is resized to the attached client's size, so `-x`/`-y` alone don't hold. Pin it: `tmux set-option -t S window-size manual \; resize-window -t S -x W -y H`.
+- Headless `-c` scripts never fire `TextChanged`/`TextChangedI` (main-loop events), even for keys fed with `nvim_feedkeys`. Test edit-triggered behavior in tmux.
+- `nvim --server SOCK --remote-expr 'luaeval("vim.api.nvim_input_mouse(...)")'` sends real clicks (grid 0 = screen rows/cols). Clicks less than `mousetime` (0.5s) apart count as a double-click, so space separate clicks out.
+- tmux windows and panes are numbered from 1 here, so `S:0.1` targets don't exist. Target panes by ID: `split-window -P -F '#{pane_id}'`.
