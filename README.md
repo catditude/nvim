@@ -14,14 +14,17 @@ lua/file_watcher.lua    → Auto-reload buffers on external file changes (libuv 
 lua/filetypes.lua       → Filetype detection for Yocto/BitBake layouts (systemd units inside recipes)
 lua/git_ahead_behind.lua → Ahead/behind counts for the statusline
 lua/review.lua          → Multi-repo review helpers (`<leader>g*`)
+lua/claude_notes.lua    → Review notes for Claude (`<leader>n`, `]n`/`[n`, `<leader>al`, `<leader>an`)
 lua/diff_layout.lua     → Picks side-by-side vs stacked diffview layout by window width
 lua/diagram_kroki.lua   → diagram.nvim mermaid renderer backed by a local Kroki server
+lua/explorer_auto.lua   → Opens the file tree (snacks explorer) by itself; keeps it out of `:q` and sessions
+lua/tree_preview.lua    → VS Code-style preview tab for files opened from the file tree
 lua/plugins/*.lua       → One file per plugin
 lua/lsp/*.lua           → LSP server configs (native 0.11 format)
 lua/lualine/themes/     → Lualine theme matching the colorscheme
 ftplugin/markdown.lua   → Markdown buffer options (wrap, linebreak, breakindent, no relative numbers) + `<leader>mt`
 lua/md_table.lua        → Draws markdown tables as floats with word-wrapped cells
-lua/md_zen.lua          → Opens markdown files in zen (100-col reading view); `q` closes it
+lua/md_zen.lua          → `q` closes zen (`<leader>z`) on markdown files
 colors/1989.lua         → Colorscheme
 ```
 
@@ -157,7 +160,12 @@ authoritative view; treat `<leader>gb` as a reading aid for modified files.
 
 | Key | What it does |
 |-----|-------------|
-| `-` | Open parent directory (oil.nvim) |
+| `-` | File tree: jump to the current file (opens the tree if hidden) |
+| In the tree: `Enter` / `l`, `-`, `.`, `Esc`, `q` | Preview a file (italic tab, replaced by the next preview; focus stays in the tree), `Enter` again to keep it and move into it, or open / close a folder, up a folder, make the folder under the cursor the top (or `q` then `-` to reset to the project), back to the file (tree stays), hide the tree |
+| In the tree: click, double-click | Preview a file / open or close a folder; keep the file and move into it |
+| In the tree: `/`, `Z` | Search the tree (`Esc` clears the search and hides the box), collapse all folders |
+| In the tree: `Ctrl-h/j/k/l` | Move to the neighboring window or tmux pane, same as elsewhere (snacks' own `Ctrl-j/k` list movement is replaced; use `j`/`k`) |
+| `<leader>e` | File tree (snacks explorer): show / hide. Opens by itself on the first file (see Custom Features) |
 | `s` | Flash jump |
 | `]t` / `[t` | Next / prev todo comment |
 | `<leader>?` | Which-key (buffer keymaps) |
@@ -172,35 +180,46 @@ Claude runs in its own tmux pane. Run `/ide` in Claude and pick an nvim: it list
 | Key | What it does |
 |-----|-------------|
 | `<leader>as` (visual) | Send the selection to Claude |
-| `<leader>as` (oil) | Add the file under the cursor to Claude's context |
+| `<leader>as` (file tree) | Add the file under the cursor to Claude's context |
 | `<leader>ab` | Add the current buffer to Claude's context |
 | `<leader>aa` or `:w` in the proposal | Accept Claude's diff (your edits to the proposal included) |
 | `<leader>ad` or `:q` in the proposal | Reject Claude's diff |
 
+Review notes (`lua/claude_notes.lua`): leave notes on lines while reading, then hand them all to Claude at once.
+
+| Key | What it does |
+|-----|-------------|
+| `<leader>n` | Note on the cursor line. On a line that has a note: edit it (empty deletes, `Esc` cancels) |
+| `<leader>n` (visual) | Note on the selected lines |
+| `]n` / `[n` | Next / prev note in the buffer (wraps) |
+| `<leader>al` | All notes to quickfix (walk with `]q` / `[q`) |
+| `<leader>an` | Send notes to Claude: writes `.claude/notes.md`, puts `@.claude/notes.md` in Claude's prompt, clears the notes |
+| `:ClaudeNotesClear` | Delete all notes without sending |
+
 ## Plugins
 
-- **oil.nvim**: edit filesystem like a buffer, shows hidden files, git status in sign column (via oil-git-status.nvim)
+- **oil.nvim** (disabled, `enabled = false`): edit filesystem like a buffer, shows hidden files, reloads when files change on disk (skipped while the buffer has unapplied edits), git status in sign column (via oil-git-status.nvim, also disabled). The file tree replaced it for navigation, including `-`
 - **telescope.nvim**: fuzzy finder with fzf-native sorter
 - **flash.nvim**: jump anywhere with `s`, pink highlight labels
 - **gitsigns.nvim**: gutter signs, inline hunk previews, staging, blame, word diff
 - **diffview.nvim**: adaptive diff layout via `lua/diff_layout.lua`: side-by-side when the window is wide (`>= 210` cols, e.g. a zoomed pane), else stacked (top/bottom). Re-evaluated on each open. Tree file panel (30 cols), treesitter highlighting in diff buffers, full file content (no folding). `<leader>b` toggles the file panel to reclaim width in a narrow pane. Its default conflict maps `<leader>ca`/`<leader>co` are off, so code action and outgoing calls keep working in diff buffers; on close, markdown buffers get zen's `q` back (diffview deletes buffer-local `q`)
 - **lazygit.nvim**: full lazygit TUI inside nvim (uses delta as diff pager)
 - **which-key.nvim**: keymap hints popup
-- **lualine.nvim**: statusline: mode, branch, dirty indicator (`*`), ahead/behind arrows, diff stats, diagnostics, shortened path, filename, navic breadcrumbs, filetype, position. Tabline shows open buffers (with index + name) and tab pages
+- **lualine.nvim**: statusline: mode, branch, dirty indicator (`*`), ahead/behind arrows, diff stats, diagnostics, shortened path, filename, navic breadcrumbs, filetype, position. Tabline shows open buffers (index + name, using the full width; `core/init.lua` / `util/init.lua` when two open files share a name; the tree's preview tab in italics) and tab pages (only when there are 2+); with focus in the file tree it shows "File tree" instead of `[No Name]`
 - **aerial.nvim**: code outline sidebar (left panel). Toggle with `<leader>o`, navigate symbols with `{`/`}` in buffers aerial has symbols for (buffer-local; not markdown, where `{`/`}` stay paragraph motions). Loads with the first file so it can set those maps. Starts at collapse level 1 (markdown: fully expanded heading tree), closes on selection. Uses LSP with treesitter fallback
 - **nvim-navic**: LSP breadcrumbs in statusline (e.g. `MyStruct > impl Display > fmt`)
 - **nvim-cmp**: completion from LSP, buffer, and path sources. `<Tab>` to confirm, ghost text preview, keyword length 2
 - **treesitter**: syntax highlighting via `vim.treesitter.start()` on all filetypes. Pinned to the archived `master` branch (host glibc too old for `main`); a shim in its `init` adapts master's query predicates to Neovim 0.12, which otherwise break markdown code-fence injections
 - **treesitter-context**: sticky scope header (1 line max) showing enclosing function/struct/class
 - **mason.nvim**: LSP/tool installer; **mason-tool-installer** auto-installs `ensure_installed` tools on startup (bash-language-server, shellcheck, shfmt, marksman, lua-language-server, json-lsp)
-- **snacks.nvim**: startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status; zen reading view (`<leader>z`, 104 wide = 4 number column + 100 text, dimming off, solid `zen_backdrop` background hiding the window behind)
+- **snacks.nvim**: startup dashboard with cute cat header, quick-access keys (find files, grep, restore session), and git status; zen reading view (`<leader>z`, 104 wide = 4 number column + 100 text, dimming off, solid `zen_backdrop` background hiding the window behind); file tree (`<leader>e`, snacks explorer, 30 wide on the left: follows the current file, git status marks changed `○` and new `?` files, refreshes on disk changes, shows dotfiles but not gitignored files). The search box is hidden until `/` (`hidden` + `auto_hide`); `Esc` in it clears the filter, since a hidden box would otherwise leave the tree filtered. The tree's list is a floating window, and vim-tmux-navigator's `wincmd h` from a float lands on a normal window instead of reporting no neighbor, so `Ctrl-h/j/k/l` in the tree look for a neighbor from the tree's sidebar split and fall back to `tmux select-pane`. `-` jumps into it at the current file; in the tree `-` goes up a folder and `Esc` returns to the file without closing it (the default `Esc` closes the tree). The explorer module is on, so `nvim dir/` opens the tree instead of netrw
 - **blink.indent**: fast indent guides with scope highlighting, `ii`/`ai` textobjects for indent blocks
 - **noice.nvim**: floating cmdline popup, enhanced messages, LSP doc borders (depends on nui.nvim)
 - **todo-comments.nvim**: colorized TODO/FIXME/HACK/NOTE highlights with `]t`/`[t` navigation, `:TodoTelescope` search
 - **render-markdown.nvim**: renders markdown inline in the buffer (headings, code blocks, checkboxes, etc.). Headings and code blocks sized to their content (`width = 'block'`), heading border bars, thin code fences, no sign-column icons. Its table rendering is off (`pipe_table.enabled = false`): tables are drawn by `lua/md_table.lua`, so prose can wrap. Rendering turns off while the window is scrolled sideways (plugin only renders at `leftcol == 0`). Cursor line stays rendered (anti-conceal off); insert mode shows raw text
 - **nvim-autopairs**: auto-closes `()`, `[]`, `{}`, quotes. Typing the closer steps over it; insert-mode `<CR>` between `{}` splits and indents, `<BS>` deletes the pair. Rust: `'` doesn't pair after a word char, `<` or `&`, so lifetimes (`&'a`, `<'a>`) type normally
 - **mini.icons**: icon provider
-- **auto-session**: saves a session per directory on exit (not in `~/`, `~/Downloads`, `/`). No auto-restore: `<CR>` on the dashboard restores it
+- **auto-session**: saves a session per directory on exit (not in `~/`, `~/Downloads`, `/`). No auto-restore: `<CR>` on the dashboard restores it. Save hooks keep the file tree out of session files
 - **auto-save.nvim**: writes modified buffers on `InsertLeave`/`TextChanged` (1s debounce, `InsertEnter` cancels) and immediately on `BufLeave`/`FocusLost`/`QuitPre`, so switching to a tmux pane saves first (tmux `focus-events on`). Skips special buffers (an oil buffer's write applies its pending filesystem changes, and a claudecode.nvim proposal's write accepts Claude's diff) and `gitcommit`/`gitrebase` (git is the editor, so quitting unsaved must still abort). Saves run `BufWritePre`, so Rust files format on every autosave. `:q!` no longer discards edits, since `QuitPre` saves first. `:ASToggle` turns it off for the session
 - **vim-tmux-navigator**: seamless split/pane navigation with tmux
 - **claudecode.nvim**: Claude Code's IDE integration (see Keymaps, Claude Code). Starts with nvim (`lazy = false`) so `/ide` can find it; terminal provider `none`, since Claude runs in tmux, not inside nvim. Listens on `127.0.0.1` only and requires the token from a `0600` lock file in `~/.claude/ide/`
@@ -244,7 +263,7 @@ All use Neovim 0.11 native LSP (no nvim-lspconfig). Configs in `lua/lsp/`, regis
 ## Custom Features
 
 ### Markdown zen (`lua/md_zen.lua`)
-A markdown file opens in zen automatically when it is the only regular window in its tab, not in diff mode, and the screen is wider than the zen column (so splits, diffview and the review layout are left alone). `q` closes zen; outside zen `q` keeps its normal meaning.
+Zen doesn't open on its own; use `<leader>z`. On a markdown file, `q` closes zen; outside zen `q` keeps its normal meaning.
 
 ### Markdown tables (`lua/md_table.lua`)
 Every pipe table in view in a markdown window is covered by a non-focusable float that draws it with cells word-wrapped to the window width (columns narrower than an even share keep their width, the rest split the remainder; `:--:`/`--:` alignment honored; `**`, `__`, backticks stripped, `[text](url)` shown as `text`). Box lines are light pink (`MdTableBorder`). When the wrapped table is taller than the raw lines, blank virtual lines under the table push the following text down; floats follow scrolling, including tables partly scrolled off the top. The row under the cursor is highlighted. In insert mode the table under the cursor shows raw so edits are visible. `<leader>mt` opens the table focused and centered (to scroll one taller than the window); `q` / `<Esc>` closes it. Padding uses window-scoped namespaces (`nvim__ns_set`, experimental API), so the same buffer in two windows of different widths (e.g. under zen) pads each correctly. Works inside floats (zen): overlays sit one zindex above the source window.
@@ -254,10 +273,31 @@ Polls open files every 1 second with `vim.uv.new_fs_poll()` and runs `checktime`
 
 Autosave writes also trip the poll, but `checktime` finds the mtime nvim recorded at write time and does nothing. An external change to an unmodified buffer reloads it without a write back (auto-save only writes `modified` buffers).
 
+### File tree auto-open (`lua/explorer_auto.lua`)
+The tree opens by itself on the first file you open after startup or a session restore, unfocused. After that it stays however `<leader>e` leaves it. It doesn't open when nvim is narrower than 120 columns, in `nvim -d`, or for files under `.git/` or outside the cwd (nvim as the editor for git commit messages or Claude's prompt).
+
+- **`:q` on the last file window quits.** Otherwise the tab would be left showing only the tree. `picker:close()` closes its windows on a later tick, too late for the `:q` in progress, so the windows are closed directly.
+- **Sessions don't store the tree.** auto-session's cleanup of non-file windows only runs for the save on exit, so a manual `:AutoSession save` stored the tree as an empty window that came back on restore. `pre_save_cmds` closes the tree before any save; `post_save_cmds` reopens it unless nvim is exiting.
+
+### Preview tabs (`lua/tree_preview.lua`)
+A file opened from the tree (`Enter`, `l`, a click) opens as the preview: italic in the tabline, and the next file previewed from the tree replaces it (the old buffer is `:bdelete`d unless it has unsaved edits or shows in another window). It becomes a normal tab when you `Enter` it again in the tree, double-click it, or edit it. Files opened any other way (Telescope, `gd`, `:e`) are normal tabs; previewing a file that's already a normal tab just shows it.
+
+- **The tree action is `tree_open`, not `confirm`.** The explorer's setup merges its own `confirm` over the user's actions, so an override by that name never runs.
+- **Pin on edit uses `TextChanged`/`TextChangedI` plus `modified`.** `BufModifiedSet` doesn't fire for ordinary edits. A reload from disk (Claude editing the file) leaves the buffer unmodified, so it doesn't pin.
+- **A click only previews.** If the first click of a double-click pinned and moved focus (as `Enter` on the shown file does), the second click would land from the wrong window. Clicks read the row under the mouse (`getmousepos`), since the list cursor hasn't synced yet when the release arrives.
+- **Italic tab and width.** The italic comes from highlight codes in the buffer name, which lualine counts as width, so the tabs `max_length` adds their (fixed) length back while a preview tab is open. Without that, the bar showed 4 tabs instead of 8.
+
 ### Git ahead/behind (`lua/git_ahead_behind.lua`)
 Periodically queries `git rev-list --left-right --count HEAD...@{upstream}` to populate `vim.g._git_ahead` and `vim.g._git_behind` for the lualine statusline. Refreshes every 30 seconds, on focus gain, after buffer writes, and on `BufEnter`.
 
 The repo is resolved from the current buffer (via `review.repo_root()`), not from nvim's cwd. In a multi-repo workspace the cwd is often not a git repo at all, and even when it is, it's the wrong repo for the buffer you're looking at.
+
+### Claude review notes (`lua/claude_notes.lua`)
+Notes are extmarks (end-of-line virtual text, line numbers tinted `ClaudeNoteNr`), not text in the file. `<leader>an` renders them to `<cwd>/.claude/notes.md` (absolute `path:line` heading, the noted code in a fence, the note) and sends it as an at-mention over the `/ide` connection, which works with terminal provider `none`. If Claude isn't connected, the file is still written and the notes are kept. `.claude/` is in the global gitignore. Notes last for the nvim session.
+
+- **Notes re-anchor on reload.** A reload from disk (`checktime`, `:e!`, reopening a closed buffer) leaves extmarks at their old row numbers even when lines were inserted above, so each note keeps a copy of its lines and moves to the nearest place that text appears. If the text is gone, the note stays put. The copy is refreshed on add, edit, and write (autosave), so your own edits to the noted lines don't lose the note.
+- **Closing a buffer keeps its notes.** `BufUnload` saves positions; `BufReadPost` puts the notes back.
+- **Only real file buffers.** `buftype` must be empty and the name must not be a `scheme://` URL, which excludes diffview's old-revision side (its line numbers aren't the file's).
 
 ### Code review (`lua/review.lua`)
 Review helpers for workspaces holding several git repos (Brazil: one repo per package under `src/`, workspace root not a repo).
@@ -270,7 +310,7 @@ Key ideas:
 - **Submodule gitlinks are filtered from file lists.** `git diff --name-only` reports submodule pointer bumps as changed paths, but they're directories, not openable files.
 
 ### 1989 colorscheme (`colors/1989.lua`)
-Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, indent guides (blink.indent), dashboard (snacks.nvim), noice.nvim cmdline, render-markdown (heading tints, dark code background), treesitter `@markup.*` (markdown, vimdoc), and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
+Hand-rolled dark theme. Palette: lavender (`#dfafff`), pink (`#f075a0`), mint (`#9EB294`), light blue (`#A2CFFE`), light purple/rose (`#F0C4C8`), light yellow (`#ffffaf`). Includes highlight groups for diagnostics, gitsigns, treesitter-context, navic breadcrumbs, inlay hints, diffs, indent guides (blink.indent), dashboard (snacks.nvim), noice.nvim cmdline, Claude review notes, snacks pickers and the file tree (explicit colors, since snacks links several groups to `NonText`, which is white here; git marks match gitsigns), render-markdown (heading tints, dark code background), treesitter `@markup.*` (markdown, vimdoc), and language-specific syntax (Ruby, JS, YAML, CSS, Markdown, HTML).
 
 ## Settings
 
