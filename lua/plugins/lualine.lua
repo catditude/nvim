@@ -16,8 +16,28 @@ local function label(name, path, bufnr)
   return name
 end
 
+-- The preview tab from the file tree (lua/tree_preview.lua) is drawn in italics: the
+-- tab's own colors plus italic, then the tab's colors again for the padding after it.
+-- There's only one preview tab, so two fixed groups are enough.
+local PREVIEW_HL, PREVIEW_END_HL = "LualinePreviewTab", "LualinePreviewTabEnd"
+-- lualine counts these highlight codes as tab width; max_length adds them back.
+local PREVIEW_CODES = #("%#" .. PREVIEW_HL .. "#") + #("%#" .. PREVIEW_END_HL .. "#")
+
+local function italic(text, context)
+  local base = require("lualine.highlight").component_format_highlight(
+    context.highlights[context.current and "active" or "inactive"])
+  local group = base:match("^%%#(.-)#$")
+  if not group then return text end
+  local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+  vim.api.nvim_set_hl(0, PREVIEW_END_HL, hl)
+  hl.italic = true
+  vim.api.nvim_set_hl(0, PREVIEW_HL, hl)
+  return "%#" .. PREVIEW_HL .. "#" .. text .. "%#" .. PREVIEW_END_HL .. "#"
+end
+
 local function tab_label(name, context)
   local text = label(name, vim.api.nvim_buf_get_name(context.bufnr), context.bufnr)
+  if require("tree_preview").is_preview(context.bufnr) then return italic(text, context) end
   return text
 end
 
@@ -106,6 +126,7 @@ return {
           max_length = function()
             local tabs = vim.fn.tabpagenr("$")
             local width = vim.o.columns - (tabs > 1 and 4 * tabs or 0)
+            if require("tree_preview").current() then width = width + PREVIEW_CODES end
             return width
           end,
           fmt = tab_label,

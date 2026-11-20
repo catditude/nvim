@@ -16,6 +16,46 @@ local function tree_nav(dir)
     end
 end
 
+-- Window the tree opens files in: the picker's main window, else the first normal one.
+local function file_win(picker)
+    if vim.api.nvim_win_is_valid(picker.main) then return picker.main end
+    for _, w in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+        if vim.api.nvim_win_get_config(w).relative == "" and vim.bo[vim.api.nvim_win_get_buf(w)].buftype == "" then
+            return w
+        end
+    end
+end
+
+-- Tree item under the mouse, with the list cursor moved onto it. The click has already
+-- moved focus to the tree, but CursorMoved hasn't synced the list yet, and a fast second
+-- click on another row arrives as a double-click.
+local function mouse_item(picker)
+    local m = vim.fn.getmousepos()
+    if m.winid ~= picker.list.win.win or m.line == 0 then return end
+    local top = vim.api.nvim_win_call(m.winid, vim.fn.winsaveview).topline
+    local idx = picker.list:row2idx(m.line - top + 1)
+    local item = picker.list:get(idx)
+    if item then picker.list:move(idx, true) end
+    return item
+end
+
+-- Enter / l / single click on a file: preview tab (lua/tree_preview.lua), focus stays in
+-- the tree. Enter again on the file already shown: pin it and move into it. A click only
+-- previews; the double-click pins (its first click must not move focus out of the tree).
+-- Folders and search results keep the explorer's own confirm.
+local function tree_confirm(picker, item, action, click)
+    local win = file_win(picker)
+    if not item or item.dir or picker.input.filter.meta.searching or not win then
+        return require("snacks.explorer.actions").actions.confirm(picker, item, action)
+    end
+    local tp = require("tree_preview")
+    if click then
+        tp.open(item.file, win)
+    elseif tp.tree_open(item.file, win) then
+        vim.api.nvim_set_current_win(win)
+    end
+end
+
 return {
     "folke/snacks.nvim",
     priority = 1000,
@@ -117,6 +157,18 @@ return {
                         layout = { width = 30, min_width = 30 },
                     },
                     actions = {
+                        -- Not named `confirm`: the explorer's setup overwrites that action.
+                        tree_open = tree_confirm,
+                        tree_click = function(picker)
+                            local item = mouse_item(picker)
+                            if item then tree_confirm(picker, item, nil, true) end
+                        end,
+                        tree_double_click = function(picker)
+                            local item, win = mouse_item(picker), file_win(picker)
+                            if not item or item.dir or not win then return end
+                            require("tree_preview").open_pinned(item.file, win)
+                            vim.api.nvim_set_current_win(win)
+                        end,
                         tree_nav_h = tree_nav("h"),
                         tree_nav_j = tree_nav("j"),
                         tree_nav_k = tree_nav("k"),
@@ -143,6 +195,10 @@ return {
                                 ["<C-k>"] = "tree_nav_k",
                                 ["<C-l>"] = "tree_nav_l",
                                 ["h"] = false, -- Enter already opens and closes folders
+                                ["<CR>"] = "tree_open",
+                                ["l"] = "tree_open",
+                                ["<LeftRelease>"] = "tree_click",
+                                ["<2-LeftMouse>"] = "tree_double_click",
                                 -- Default Esc closes the tree; keep it open and go back to the file.
                                 ["<Esc>"] = "back_to_file",
                             },
