@@ -1,4 +1,26 @@
 -- Statusline showing mode, branch, diagnostics, breadcrumbs, and cursor position
+
+-- Tab label: crate/file inside Rust crates; parent/file when another open file has the
+-- same name (two init.lua tabs).
+local function label(name, path, bufnr)
+  local crate = path:match("/crates/([^/]+)/")
+  if crate then return crate .. "/" .. vim.fn.fnamemodify(path, ":t") end
+  if path == "" then return name end
+  local tail = vim.fn.fnamemodify(path, ":t")
+  for _, b in ipairs(vim.api.nvim_list_bufs()) do
+    if b ~= bufnr and vim.bo[b].buflisted
+      and vim.fn.fnamemodify(vim.api.nvim_buf_get_name(b), ":t") == tail then
+      return vim.fn.fnamemodify(path, ":h:t") .. "/" .. name
+    end
+  end
+  return name
+end
+
+local function tab_label(name, context)
+  local text = label(name, vim.api.nvim_buf_get_name(context.bufnr), context.bufnr)
+  return text
+end
+
 return {
   "nvim-lualine/lualine.nvim",
   dependencies = { "SmiteshP/nvim-navic" },
@@ -80,17 +102,16 @@ return {
           mode = 2,
           -- With focus in the file tree, lualine still shows the current buffer; name it.
           filetype_names = { snacks_picker_list = "File tree", snacks_picker_input = "File tree" },
-          fmt = function(name, context)
-            local path = vim.api.nvim_buf_get_name(context.bufnr)
-            local crate = path:match("/crates/([^/]+)/")
-            if crate then
-              return crate .. "/" .. vim.fn.fnamemodify(path, ":t")
-            end
-            return name
+          -- Default is 2/3 of the width, which hid buffers behind "..." with the rest empty.
+          max_length = function()
+            local tabs = vim.fn.tabpagenr("$")
+            local width = vim.o.columns - (tabs > 1 and 4 * tabs or 0)
+            return width
           end,
+          fmt = tab_label,
         },
       },
-      lualine_z = { "tabs" },
+      lualine_z = { { "tabs", cond = function() return vim.fn.tabpagenr("$") > 1 end } },
     },
   },
 }
