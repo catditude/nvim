@@ -1,3 +1,21 @@
+-- Ctrl-h/j/k/l from the file tree. Its list is a float, and vim-tmux-navigator's
+-- `wincmd h` from a float lands on a normal window, so it never hands off to tmux.
+-- Look for a neighbor from the tree's sidebar split instead; none means tmux.
+local function tree_nav(dir)
+    return function(picker)
+        local target = vim.api.nvim_win_call(picker.layout.root.win, function()
+            local n = vim.fn.winnr(dir)
+            return n ~= vim.fn.winnr() and vim.fn.win_getid(n) or nil
+        end)
+        if target then
+            vim.api.nvim_set_current_win(target)
+        elseif vim.env.TMUX then
+            local flag = ({ h = "-L", j = "-D", k = "-U", l = "-R" })[dir]
+            vim.fn.system({ "tmux", "-S", vim.split(vim.env.TMUX, ",")[1], "select-pane", "-t", vim.env.TMUX_PANE, flag })
+        end
+    end
+end
+
 return {
     "folke/snacks.nvim",
     priority = 1000,
@@ -44,6 +62,21 @@ return {
     end,
     keys = {
         { "<leader>z", function() Snacks.zen() end, desc = "Zen: 100-column reading view" },
+        { "<leader>e", function() Snacks.explorer() end, desc = "File tree (toggle)" },
+        {
+            "-",
+            function()
+                local tree = Snacks.picker.get({ source = "explorer" })[1]
+                if vim.bo.buftype == "" and vim.api.nvim_buf_get_name(0) ~= "" then
+                    Snacks.explorer.reveal()
+                elseif not tree then
+                    Snacks.explorer()
+                end
+                -- A newly opened tree takes focus itself; an open one needs it moved.
+                if tree then tree:focus("list") end
+            end,
+            desc = "File tree: jump to the current file",
+        },
     },
     ---@type snacks.Config
     opts = {
@@ -68,7 +101,58 @@ return {
         -- fixes every vim.ui.select site (review picker, LSP code actions, etc.).
         -- ui_select is registered eagerly in init below; picker.enabled alone only
         -- wires it lazily on first picker use.
-        picker = { enabled = true, ui_select = true },
+        picker = {
+            enabled = true,
+            ui_select = true,
+            sources = {
+                explorer = {
+                    -- Dotfiles shown (as oil had them); gitignored files stay hidden.
+                    hidden = true,
+                    layout = {
+                        -- The search box shows only while you type in it (`/`): hidden at
+                        -- open, and auto_hide hides it again when you leave it.
+                        hidden = { "input" },
+                        auto_hide = { "input" },
+                        -- 30 wide (default 40) so code keeps ~105 of a 136-column pane.
+                        layout = { width = 30, min_width = 30 },
+                    },
+                    actions = {
+                        tree_nav_h = tree_nav("h"),
+                        tree_nav_j = tree_nav("j"),
+                        tree_nav_k = tree_nav("k"),
+                        tree_nav_l = tree_nav("l"),
+                        back_to_file = function(picker)
+                            if vim.api.nvim_win_is_valid(picker.main) then vim.api.nvim_set_current_win(picker.main) end
+                        end,
+                        -- Leaving the search box hides it, so also clear the filter;
+                        -- otherwise the tree keeps showing only the matches.
+                        search_done = function(picker)
+                            picker.input:set("", "")
+                            picker:focus("list", { show = true })
+                        end,
+                    },
+                    win = {
+                        -- Default Esc in the search box closes the tree too.
+                        input = { keys = { ["<Esc>"] = { "search_done", mode = { "n", "i" } } } },
+                        list = {
+                            keys = {
+                                ["-"] = "explorer_up",
+                                -- Pane navigation, like everywhere else (default C-j/C-k move in the list).
+                                ["<C-h>"] = "tree_nav_h",
+                                ["<C-j>"] = "tree_nav_j",
+                                ["<C-k>"] = "tree_nav_k",
+                                ["<C-l>"] = "tree_nav_l",
+                                ["h"] = false, -- Enter already opens and closes folders
+                                -- Default Esc closes the tree; keep it open and go back to the file.
+                                ["<Esc>"] = "back_to_file",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        -- `nvim dir/` opens the tree instead of netrw.
+        explorer = { enabled = true },
         dashboard = {
             preset = {
                 header = table.concat({

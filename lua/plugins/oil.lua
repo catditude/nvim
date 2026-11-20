@@ -1,12 +1,15 @@
 -- File explorer that lets you edit your filesystem like a buffer
 return {
   "stevearc/oil.nvim",
+  -- Off: the file tree (snacks explorer, lua/plugins/snacks.lua) handles navigation and `-`.
+  enabled = false,
   dependencies = { "echasnovski/mini.icons" },
   lazy = false,
   init = function()
     vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Open parent directory" })
   end,
   opts = {
+    watch_for_changes = true,
     keymaps = {
       ["<C-h>"] = false,
       ["<C-l>"] = false,

@@ -78,6 +78,8 @@ return {
           "buffers",
           icons_enabled = true,
           mode = 2,
+          -- With focus in the file tree, lualine still shows the current buffer; name it.
+          filetype_names = { snacks_picker_list = "File tree", snacks_picker_input = "File tree" },
           fmt = function(name, context)
             local path = vim.api.nvim_buf_get_name(context.bufnr)
             local crate = path:match("/crates/([^/]+)/")

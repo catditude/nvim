@@ -340,3 +340,16 @@ hi("FlashLabel", { fg = colors.dark_gray, bg = colors.flash_pink, bold = true })
 hi("ClaudeNote", { fg = colors.pink, italic = true })
 hi("ClaudeNoteNr", { fg = colors.pink, bold = true })
 
+-- Snacks pickers and the file tree (snacks explorer). Snacks links several of these to
+-- NonText, which is white on dark_gray here, so they're set explicitly. Git marks match
+-- the gitsigns gutter; new (untracked) files use the add color so they stand out.
+hi("SnacksPicker", { fg = colors.white, bg = colors.dark_gray })
+hi("SnacksPickerTree", { fg = colors.muted })
+hi("SnacksPickerDir", { fg = colors.comment_gray })
+hi("SnacksPickerTotals", { fg = colors.comment_gray })
+hi("SnacksPickerPathHidden", { fg = colors.comment_gray })
+hi("SnacksPickerPathIgnored", { fg = colors.muted })
+hi("SnacksPickerGitStatusModified", { fg = colors.orange })
+hi("SnacksPickerGitStatusAdded", { fg = colors.mint })
+hi("SnacksPickerGitStatusUntracked", { fg = colors.mint })
+hi("SnacksPickerGitStatusDeleted", { fg = colors.dark_pink })
