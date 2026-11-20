@@ -335,3 +335,8 @@ hi("@markup.link.url", { fg = colors.comment_gray, underline = true })
 
 -- Flash
 hi("FlashLabel", { fg = colors.dark_gray, bg = colors.flash_pink, bold = true })
+
+-- Claude review notes (lua/claude_notes.lua): note text at end of line, tinted line numbers
+hi("ClaudeNote", { fg = colors.pink, italic = true })
+hi("ClaudeNoteNr", { fg = colors.pink, bold = true })
+

@@ -94,4 +94,5 @@ require("lazy_init")
 require("lsp_setup")
 require("file_watcher")
 require("git_ahead_behind")
+require("claude_notes")
 
